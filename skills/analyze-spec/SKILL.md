@@ -3,8 +3,9 @@ name: analyze-spec
 description: >-
   Analyze the task INPUT for a task on ANY project — a feature/change spec OR a bug report — and turn it
   into a clarified, code-grounded pack: what is being asked (feature: requirements Explicit/Inferred/Open;
-  bug: expected vs actual + repro + scope), the related screens/touchpoints, and customer-facing open
-  questions & conflicts. GROUNDED by the prior task-survey (reads current-state.md/impact.md) so conflict
+  bug: expected vs actual + repro + scope), the related screens/touchpoints, an INPUT CONTRACT (valid
+  range, boundaries and required-ness per parameter, each with the SOURCE that proves it was not derived
+  from the implementation), and customer-facing open questions & conflicts. GROUNDED by the prior task-survey (reads current-state.md/impact.md) so conflict
   detection is against real code ("spec says X but the system does Y", "the route described doesn't
   exist"), not the document alone. Runs AFTER task-survey for every task type, then hands off: feature →
   planning; bug → RCA (feeds its Problem Statement). Not for test-case authoring (that is the QC
@@ -44,6 +45,26 @@ task-survey (current-state.md + impact.md)  →  ANALYZE-SPEC  →  ┬─ featu
 
 ## Nguyên tắc phân tích
 
+### Requirement là **hợp đồng hành vi**, không phải kế hoạch implement
+
+Phép thử nhanh — mượn từ OpenSpec: **nếu implementation đổi mà hành vi nhìn từ ngoài không đổi, thì nó KHÔNG thuộc requirement.**
+
+| ✅ Thuộc requirement | ❌ Không thuộc |
+|---|---|
+| Hành vi quan sát được mà user hoặc hệ thống downstream dựa vào | Tên class / hàm / biến nội bộ |
+| **Input, output, và điều kiện lỗi** | Chọn thư viện / framework |
+| Ràng buộc bên ngoài: bảo mật, riêng tư, độ tin cậy, tương thích | Các bước implement |
+| Kịch bản **kiểm chứng được** | Kế hoạch thực thi chi tiết |
+
+### Dùng ngôn ngữ chuẩn tắc
+
+Requirement bắt buộc viết bằng **PHẢI / SHALL / MUST** — tránh *"nên"*, *"có thể"*, *"xử lý phù hợp"*. Chữ mơ hồ không phải requirement, nó là **Open Question**.
+
+### Không bịa requirement để lấp chỗ trống
+
+Task thuần refactor / tooling / sửa docs → **không có** requirement nào đổi là chuyện bình thường. Ghi rõ `Không đổi hành vi — lý do: <…>` thay vì nặn ra một dòng cho có. Requirement mô tả hành vi; hành vi không đổi thì requirement không đổi.
+
+
 - **Không invent**. Phân loại mọi mục: `Explicit` (có trong tài liệu) / `Inferred` (suy ra, ghi căn cứ) / `Open` (chưa đủ căn cứ → hỏi khách).
 - Mọi dòng phải **cite nguồn**: `[Tên tài liệu | mục/trang]` hoặc `[current-state.md | file:line]`.
 - Conflict ảnh hưởng hành vi/scope → `[BLOCKER]`. Nguồn: spec-vs-spec, hoặc **spec/expected ⟷ code** (current-state).
@@ -66,7 +87,37 @@ Màn hình/touchpoint task đụng tới, **đối chiếu current-state.md**: c
 
 ### B3 — Cốt lõi (theo loại)
 - **Feature → Requirements** atomic: `REQ-ID | Screen/Flow | Requirement | Type (UI/Validation/Behavior/BusinessRule/Permission/Integration/Abnormal/I18N) | Maps to (✅/⚠/🆕 từ current-state) | Source | Confidence`. Cột `Maps to` là cầu sang planning (🆕/⚠ → WBS item; ✅ → chỉ verify).
+
+  **Mỗi requirement PHẢI kèm ≥1 scenario** dạng `WHEN … THEN …` (mượn OpenSpec). Đây là chỗ requirement trở nên **kiểm chứng được** — và là cầu trực tiếp sang unit test: mỗi scenario là một case tiềm năng.
+
+  ```
+  ### REQ-03 — Phí giao hàng theo hạng khách
+  Hệ thống PHẢI miễn phí giao hàng cho khách VIP.
+
+  #### Scenario: Khách VIP
+  - WHEN đơn hàng của khách hạng VIP
+  - THEN phí giao hàng = 0
+
+  #### Scenario: Khách thường, dưới ngưỡng
+  - WHEN khách thường, tổng đơn < 500.000đ
+  - THEN phí giao hàng = 30.000đ
+  ```
+
+  Requirement **không viết được scenario nào** → nó chưa đủ rõ → **Open Question**, không phải requirement.
 - **Bug → Expected behaviors**: `ID | Screen/Flow | Expected (đúng ra phải) | Actual (đang bị) | Repro steps | Scope/điều kiện | Source | Confidence`. Bảng này chính là **Problem Statement** cho RCA.
+
+### B3b — Phân loại thay đổi so với hiện trạng (delta)
+
+Ngoài phân loại theo *nguồn gốc* (Explicit/Inferred/Open), gắn thêm chiều **thay đổi gì so với hệ thống đang chạy** — mượn OpenSpec:
+
+| Nhãn | Nghĩa | Bắt buộc kèm |
+|---|---|---|
+| `ADDED` | Hành vi hoàn toàn mới | — |
+| `MODIFIED` | Hành vi cũ đổi | **Ghi ĐỦ nội dung mới**, không ghi mỗi phần đổi — ghi thiếu là mất chi tiết khi bàn giao |
+| `REMOVED` | Bỏ hành vi cũ | **Lý do** + **Cách chuyển đổi** cho dữ liệu/user đang dùng |
+| `RENAMED` | Chỉ đổi tên, hành vi giữ nguyên | `FROM:` / `TO:` |
+
+Nhãn này ghép với cột `Maps to`: `🆕 + ADDED` là việc mới hoàn toàn; `⚠ + MODIFIED` là chỗ **dễ vỡ nhất** vì đụng code đang chạy — ưu tiên khi chia WBS và khi viết test hồi quy.
 
 ### B4 — Conflict & gap (grounded)
 - **Conflict** — 2 nguồn khác nhau; hoặc **spec/expected ⟷ code** (`[spec | ...] vs [current-state.md | file:line]`).
@@ -74,7 +125,33 @@ Màn hình/touchpoint task đụng tới, **đối chiếu current-state.md**: c
 - **Không tồn tại** — task nhắc route/màn hình/field mà survey không thấy → cờ đỏ, hỏi khách (thường khách ở bản deploy cũ / nhầm scope).
 - Phân loại `[BLOCKER]` (chặn: business outcome/permission/scope/expected) hoặc `[CLARIFY]`.
 
-## Output — 5 section (lưu `tasks/{ID}/spec-analysis.md`)
+### B5 — Input Contract (miền giá trị & ràng buộc) 🆕
+
+**Đây là phần hay bị bỏ nhất, và là lý do test giá trị biên hay thiếu.** Requirement mô tả *hành vi*; phần này mô tả *dữ liệu vào được phép nhận cái gì*. Thiếu nó thì không ai biết biên nằm ở đâu để mà kiểm.
+
+Với **mỗi tham số / trường nhập** mà task đụng tới, xác định:
+
+| Cần xác định | Ví dụ |
+|---|---|
+| Kiểu dữ liệu | `int` · `string` · `list<Item>` |
+| **Miền hợp lệ** — cận dưới, cận trên | `18–120` · `≤ 50 ký tự` · `> 0` |
+| Bắt buộc hay không | có · không · **bắt buộc nếu <điều kiện>** |
+| Giá trị đặc biệt được phép | rỗng · `null` · `0` · danh sách rỗng |
+| Nguồn của ràng buộc | ← **cột quan trọng nhất** |
+
+**Ba nguồn hợp lệ, xếp theo độ tin cậy:**
+
+| Nguồn | Vì sao dùng được |
+|---|---|
+| **Spec / acceptance criteria** | Tốt nhất — viết độc lập với code |
+| **Schema DB · migration** | `varchar(50)` · `NOT NULL` · `unsigned` · `CHECK` là **khai báo**, không phải logic xử lý |
+| **API contract · OpenAPI** | `minimum` · `maxLength` · `enum` · `pattern` |
+
+⚠ **Rule validate trong code KHÔNG phải nguồn hợp lệ.** Lấy miền giá trị từ đó là chép lại hành vi hiện tại — nếu rule đang sai thì ràng buộc chép ra cũng sai theo. Chỉ ghi nhận nó như **[Inferred]** kèm câu hỏi cho khách.
+
+Không tìm được ràng buộc ở cả ba nguồn → **Open Question**, không tự đặt ra một con số.
+
+## Output — 6 section (lưu `tasks/{ID}/spec-analysis.md`)
 
 Thứ tự cố định, dùng bảng:
 
@@ -82,7 +159,8 @@ Thứ tự cố định, dùng bảng:
 2. **Task Summary** — feature: Mục tiêu | Actor | Trigger→End-state | In/Out-scope; bug: **Expected vs Actual** | Phạm vi | Mức nghiêm trọng. + Impact chính | Tài liệu dùng.
 3. **Related Screens / Touchpoints** — bảng như B2.
 4. **Requirements** (feature) *hoặc* **Expected Behaviors / Problem Statement** (bug) — bảng như B3.
-5. **Open Questions / Conflicts** — `QA-ID | Level (BLOCKER/CLARIFY) | Issue | Source A | Source B / Missing / Code-reality | Impact | Câu hỏi cho khách`.
+5. **Input Contract** 🆕 — `Tham số/Field | Kiểu | Miền hợp lệ (min–max) | Bắt buộc | Giá trị đặc biệt (rỗng/null/0) | Nguồn | Confidence`. Ràng buộc chưa tìm được nguồn → để trống + đẩy sang section 6, **không điền ước đoán**.
+6. **Open Questions / Conflicts** — `QA-ID | Level (BLOCKER/CLARIFY) | Issue | Source A | Source B / Missing / Code-reality | Impact | Câu hỏi cho khách`.
 
 Read-only mặc định (in chat); có workspace + user đồng ý lưu → ghi `tasks/{ID}/spec-analysis.md`.
 
@@ -91,6 +169,7 @@ Read-only mặc định (in chat); có workspace + user đồng ý lưu → ghi 
 - **Feature → planning**: `Requirements` (Maps to ⚠/🆕) + In-scope → WBS item. Đề nghị: "lập plan (WBS) từ requirements này?".
 - **Bug → RCA**: section 4 (Expected vs Actual + repro) = **Problem Statement** cho `rca-method.md`; RCA **tiêu thụ, không dựng lại**. Sau RCA (root cause) → planning.
 - **→ khách**: Open Questions mức `[BLOCKER]` phải **gửi khách chốt TRƯỚC** khi planning/RCA finalize.
+- **→ unit test**: section 4 (Requirements + scenario `WHEN…THEN`) là nguồn suy `expected`; section 5 (Input Contract) là nguồn cho **giá trị biên**. Không có hai thứ này thì test biên hoặc bị bỏ, hoặc bị chép lại từ code đang chạy.
 - **Artifact contract**: analyze-spec đọc survey (không survey lại); planning & RCA đọc spec-analysis (không phân tích lại).
 
 ## Guardrails
@@ -100,13 +179,31 @@ Read-only mặc định (in chat); có workspace + user đồng ý lưu → ghi 
 - Còn `[BLOCKER]` → `BLOCKED`, không kết luận input sẵn sàng để planning/RCA.
 - Không bỏ qua chữ mơ hồ ("xử lý phù hợp", "hiển thị đúng") mà không truy rule cụ thể → thành Open Question.
 - Giữ nguyên chuỗi UI gốc (tiếng Nhật…) ở mọi locale.
+- **Không lấy miền giá trị / biên từ rule validate trong code** — chỉ từ spec, schema DB, hoặc API contract. Lấy từ code thì đánh `[Inferred]` + Open Question.
+- **Không bịa requirement** khi task không đổi hành vi (refactor/tooling/docs) — ghi rõ "không đổi hành vi" là hợp lệ.
+- Requirement không viết nổi một scenario `WHEN…THEN` → chưa đủ rõ → Open Question.
+
+## Những câu tự bào chữa hay gặp
+
+Bảng này để **tự soi mình** trước khi báo xong — mượn cách làm của `sdd-techtus`.
+
+| Câu bào chữa | Sự thật |
+|---|---|
+| *"Yêu cầu rõ rồi, khỏi cần analyze"* | Rõ với người đọc spec ≠ rõ với người sẽ code. Bỏ bước này không xoá chi phí, chỉ đẩy nó xuống lúc đang code — lúc đó đắt hơn nhiều |
+| *"Chỗ này chắc là ý khách muốn vậy"* | Đó là `Inferred`, phải ghi căn cứ. Viết như `Explicit` là bịa có tổ chức |
+| *"Miền giá trị đọc code validate là ra"* | Ra được **hành vi hiện tại**, không phải **hành vi đúng**. Rule đang sai thì chép ra cũng sai theo |
+| *"Biên thì tí nữa dev tự biết"* | Không ai tự biết. Biên không ghi ra là biên không được test — đó là chỗ bug hay nấp nhất |
+| *"Task này refactor, phải có requirement gì đó chứ"* | Không. Hành vi không đổi thì requirement không đổi. Nặn thêm một dòng cho có là làm bẩn tài liệu |
+| *"Còn một BLOCKER thôi, cứ planning trước"* | BLOCKER là thứ **đổi được cả scope**. Plan dựng trên nó phải làm lại từ đầu |
+| *"Conflict doc vs code — chắc code đúng vì nó đang chạy"* | Đang chạy ≠ đang đúng. Hai bên trả lời hai câu khác nhau; để khách quyết, đừng tự phân xử |
 
 ## Help
 
 ```
 analyze-spec <feature | bug | path/ticket-content> [locale=vn|en|ja]
   Làm rõ INPUT task (feature HOẶC bug), ĐỐI CHIẾU current-state.md/impact.md (grounded by survey).
-  - Feature → requirements (Explicit/Inferred/Open) + related screens → planning.
+  - Feature → requirements (Explicit/Inferred/Open, mỗi cái ≥1 scenario WHEN/THEN) + related screens → planning.
+  - Input Contract: miền giá trị/biên từng tham số + NGUỒN ràng buộc → nuôi test giá trị biên.
   - Bug → expected vs actual + repro + scope → feed Problem Statement cho RCA.
   - Luôn chạy sau task-survey; task nhỏ-rõ thì được skip. BLOCKER open questions → hỏi khách trước.
   KHÔNG viết testcase (QC analyze-spec/create-test-case) hay ticket (backlog-ticket).
