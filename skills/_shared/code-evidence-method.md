@@ -10,6 +10,12 @@
 4. **Công cụ thay được thao tác, không thay được phán đoán.** Đồ thị code trả lời *"ai gọi cái này"* nhanh và chính xác hơn grep. Nó **không** trả lời *"chỗ nào coupling qua tên bảng"*, *"khai báo hai nơi có lệch không"*, hay *"đọc phía nào mới đúng"* — ba câu đó vẫn là việc của người.
 5. **Đọc phía consumer, không suy từ producer** — data chảy A → B thì mở code **B** đọc thật. (Bài học: đoán "batch ghi Redis" từ config producer — thực tế batch ghi DB, chỉ lộ khi đọc code consumer.) Cross-check **hai đầu** mỗi ranh giới: producer ghi format gì ↔ consumer đọc format gì. Lệch = finding.
 
+## Cài công cụ — luật chung
+
+**Dò thì cứ dò, cài thì phải hỏi.** Lệnh chỉ đọc (`command -v`, `status`, `--version`) chạy thoải mái. Lệnh **thay đổi máy hoặc cấu hình** — cài package toàn cục, sửa file cấu hình agent, tạo thư mục trong repo — **luôn hỏi trước**, nêu rõ *làm gì · đụng vào đâu · gỡ thế nào · không cài thì mất gì*.
+
+Không bao giờ gộp nhiều mức xâm nhập vào một câu hỏi.
+
 ## Bước 0 — Source Catalog (trước khi phân tích)
 
 Liệt kê nguồn cần đọc, gắn mức: 🔴 REQUIRED / 🟡 RECOMMENDED / 🟢 OPTIONAL. REQUIRED phải đọc được, hoặc user xác nhận **NOT AVAILABLE**, mới đi tiếp. Ghi rõ **nhánh nào + phạm vi nào** đã đọc (module/service) — không đọc mông lung.
@@ -51,7 +57,27 @@ codegraph status                # repo này đã index chưa + index có đủ k
 >
 > **Không cài cũng được** — phương pháp vẫn chạy bằng grep, chỉ chậm hơn và sót các trường hợp gọi gián tiếp.
 
-Đồng ý → cài theo thứ tự: `npm i -g @colbymchenry/codegraph` → `codegraph install` (chọn agent) → `codegraph init` trong repo.
+**Đồng ý → cài hai bước, KHÔNG gộp bước thứ ba:**
+
+```bash
+npm i -g @colbymchenry/codegraph    # CLI toàn máy
+codegraph init                      # index repo hiện tại → tạo .codegraph/
+```
+
+Hai lệnh đó là **đủ để dùng tầng 1** — agent gọi `codegraph callers …` qua shell như mọi lệnh khác.
+
+**`codegraph install` là việc RIÊNG, hỏi riêng, và không bắt buộc.** Nó đăng ký MCP server vào **file cấu hình của agent** (`~/.claude.json`, `~/.codex/config.toml`, Cursor) — cấu hình thường trú, nằm ngoài repo, ảnh hưởng mọi phiên về sau. Lợi ích: thành tool call native, ít token hơn, agent tự biết có công cụ mà không cần đọc file này.
+
+> Hỏi tách bạch: *"Có muốn đăng ký thêm vào agent để lần sau khỏi gọi qua shell không? Việc này sửa file cấu hình của Claude Code/Codex, gỡ bằng `codegraph uninstall`."*
+
+**Ba mức xâm nhập — đừng gộp:**
+
+| Việc | Đụng vào đâu | Cần hỏi? | Gỡ bằng |
+|---|---|---|---|
+| `command -v` · `status` | không đụng gì | ❌ cứ chạy | — |
+| `npm i -g` | CLI toàn máy | ✅ | `npm rm -g` |
+| `codegraph init` | `.codegraph/` trong repo, đã gitignore | ✅ nhẹ | `codegraph uninit` |
+| `codegraph install` | **cấu hình agent, ngoài repo** | ✅ **hỏi riêng** | `codegraph uninstall` |
 
 **Bước 1.3 — LUÔN chạy `codegraph status` trước khi tin kết quả.** Index dở dang **không báo lỗi**, chỉ thiếu cạnh im lặng:
 

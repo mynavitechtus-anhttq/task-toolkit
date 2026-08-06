@@ -1,6 +1,6 @@
 {
   "name": "task-toolkit",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Chưa biết dùng thì gõ /task-toolkit:help. Bộ toolkit lifecycle giao việc, tự chứa đầy đủ: task-init → discovery (khi chưa có bản đồ kiến trúc) → task-survey (dependency walk) → analyze-spec (làm rõ input, grounded) → BUG: debug (chẩn đoán kỹ thuật, ra Immediate Cause có evidence + option fix, KHÔNG sửa code) → RCA 5-Whys → report → planning (kế hoạch fix) | FEATURE: planning (WBS + checklist tiến độ) → report BLUF 2 tầng VN/EN/JA → backlog-ticket (ticket chuẩn công ty + estimation). Kèm release-note: release note + deployment runbook cho CẢ LẦN RELEASE (auto 影響箇所マトリックス từ diff, đánh giá downtime, nháp deploy/smoke/rollback steps) — chạy như quy trình riêng, không nằm trong pipeline per-task. Mọi stage tái dùng artifact stage trước, không điều tra lại. Kèm pass thẩm định report-reviewer trước khi gửi khách. Export md/docx/pdf/xlsx. Generic mọi repo (framework autodetect, bản repo tự thắng).",
   "author": {
     "name": "anhttq"
