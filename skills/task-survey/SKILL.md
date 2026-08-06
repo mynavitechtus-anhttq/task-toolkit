@@ -41,6 +41,10 @@ Từ title/mô tả task rút keywords (tên màn hình, route, chuỗi UI — *
 
 ## Bước 3 — Dependency walk (quan trọng nhất — feed Impact coverage)
 
+> **Chạy đủ BA TẦNG** theo [`../_shared/code-evidence-method.md`](../_shared/code-evidence-method.md) §Dependency walk:
+> **1** reference trong code (có `codegraph` thì dùng — chưa có thì **hỏi user trước khi cài**, không tự cài) · **2** coupling qua tên bảng/cache key/đường dẫn (luôn grep, công cụ mù) · **3** khai báo chéo layer (luôn thủ công).
+> Bỏ tầng 2–3 là bỏ đúng chỗ bug đắt nhất hay nấp.
+
 Với MỖI file sẽ sửa (⚠ update), grep tiếp **usages của nó ở nơi khác**:
 
 - Component/partial/layout dùng chung → màn hình nào khác render nó?
