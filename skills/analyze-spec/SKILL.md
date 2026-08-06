@@ -183,6 +183,10 @@ Read-only mặc định (in chat); có workspace + user đồng ý lưu → ghi 
 - **Không bịa requirement** khi task không đổi hành vi (refactor/tooling/docs) — ghi rõ "không đổi hành vi" là hợp lệ.
 - Requirement không viết nổi một scenario `WHEN…THEN` → chưa đủ rõ → Open Question.
 
+## Ví dụ output đầy đủ
+
+Xem [`example-output.md`](example-output.md) — một `spec-analysis.md` đã điền, 6 section, có sẵn ba loại conflict và một Input Contract lấy từ cả ba nguồn hợp lệ. Trong đó đánh dấu 👀 ba chỗ hay bị làm sai nhất.
+
 ## Những câu tự bào chữa hay gặp
 
 Bảng này để **tự soi mình** trước khi báo xong — mượn cách làm của `sdd-techtus`.
