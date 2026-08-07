@@ -24,6 +24,7 @@
 
 | | |
 |---|---|
+| **Vì sao bây giờ** 🆕 | Bộ phận tuyển dụng phải gọi lại hỏi nơi làm việc cho phần lớn đơn, mất trung bình 1 ngày mỗi đơn. Số cố định bị chặn khiến ứng viên lớn tuổi bỏ giữa chừng — 2 khiếu nại trong tháng 7 |
 | **Mục tiêu** | Ứng viên chọn được nơi làm việc mong muốn khi nộp đơn; đồng thời nới quy tắc số điện thoại để nhận số cố định |
 | **Actor** | Ứng viên (chưa đăng nhập) |
 | **Trigger → End-state** | Mở form ứng tuyển → điền → gửi → đơn lưu kèm nơi làm việc mong muốn |
@@ -36,7 +37,7 @@
 | Định danh | Vai trò | Entry | Action | Dependency | Trạng thái | Source |
 |---|---|---|---|---|---|---|
 | `応募フォーム` | Form chính | `/apply` | submit | `ApplicationValidator` | ⚠ update | screen-detail p.3 |
-| `お問い合わせフォーム` | Không đụng trực tiếp | `/contact` | — | **dùng chung** `ApplicationValidator` | ⚠ **rủi ro lan** | `impact.md` |
+| `お問い合わせフォーム` | Không đụng trực tiếp | `/contact` | — | **dùng chung** `ApplicationValidator` | ✅ **giữ nguyên** — tách rule riêng (DEC-01) | `impact.md` |
 | `確認画面` | Xem lại trước gửi | `/apply/confirm` | — | render lại field | ⚠ update | screen-detail p.5 |
 
 👀 **Dòng thứ hai là thứ dependency walk sinh ra.** Spec không nhắc form liên hệ — nhưng nó dùng chung validator, nên sửa validate SĐT là đụng cả nó. Không có `impact.md` thì dòng này không tồn tại.
@@ -47,7 +48,7 @@
 |---|---|---|---|---|---|---|---|
 | REQ-01 | 応募フォーム | Form PHẢI có trường chọn nơi làm việc mong muốn | UI | `ADDED` | 🆕 | spec §2.1 | Explicit |
 | REQ-02 | 応募フォーム | Nơi làm việc mong muốn PHẢI bắt buộc nhập | Validation | `ADDED` | 🆕 | — | **Open** |
-| REQ-03 | 応募フォーム · お問い合わせ | Số điện thoại PHẢI chấp nhận số cố định 10 chữ số | Validation | `MODIFIED` | ⚠ | spec §3.2 | Explicit |
+| REQ-03 | 応募フォーム | Số điện thoại PHẢI chấp nhận số cố định 10 chữ số | Validation | `MODIFIED` | ⚠ | spec §3.2 · DEC-01 | Explicit |
 | REQ-04 | 確認画面 | Màn xác nhận PHẢI hiển thị nơi làm việc đã chọn | UI | `ADDED` | 🆕 | screen-detail p.5 | Explicit |
 
 ### Scenarios
@@ -102,13 +103,29 @@ Hệ thống PHẢI chấp nhận số điện thoại cố định 10 chữ s�
 | **QA-01** | 🔴 BLOCKER | Nơi làm việc mong muốn bắt buộc hay không | spec §2.1 chỉ liệt kê 47 tỉnh, không nói bắt buộc | screen-detail p.3 **có dấu 必須** | Đổi REQ-02, đổi cả validate client lẫn server | Trường này bắt buộc nhập hay được để trống? |
 | **QA-02** | 🟡 CLARIFY | Độ dài tối đa SĐT lệch nhau | `applications.phone varchar(20)` | `ApplicationValidator::PHONE_MAX = 15` | Số 16–20 ký tự: DB nhận, code chặn | Giới hạn đúng là bao nhiêu — 15 hay 20? |
 | **QA-03** | 🔴 BLOCKER | Chữ số full-width `０９０…` xử lý ra sao | Không tài liệu nào nói | Code hiện tại **không** convert → báo lỗi | Người dùng Nhật gõ IME hay ra full-width. Ảnh hưởng tỉ lệ gửi đơn thành công | Có tự chuyển full-width sang half-width trước khi validate không? |
-| **QA-04** | 🟡 CLARIFY | Sửa validate SĐT lan sang form liên hệ | `impact.md` — dùng chung `ApplicationValidator` | — | Form liên hệ cũng nhận số cố định, không rõ có mong muốn không | Form liên hệ có nên đổi theo không, hay tách rule riêng? |
+| ~~QA-04~~ | ✅ **đã đóng** → DEC-01 | Sửa validate SĐT lan sang form liên hệ | `impact.md` — dùng chung `ApplicationValidator` | — | Form liên hệ cũng nhận số cố định, không rõ có mong muốn không | Form liên hệ có nên đổi theo không, hay tách rule riêng? |
 
 👀 **QA-02 và QA-03 là hai loại conflict khác nhau, xử lý khác nhau:**
 
 - **QA-01 là doc ⟷ doc.** Hai tài liệu nói khác nhau. Screen detail ưu tiên hơn spec chung, **nhưng** vì ảnh hưởng hành vi nên vẫn để BLOCKER, không tự chọn bên.
 - **QA-02 là doc ⟷ code.** Không phân xử bằng ưu tiên. Ghi cả hai phía kèm nguồn, để khách quyết. `varchar(20)` không "thắng" chỉ vì nó là DB.
 - **QA-03 là gap thật** — không bên nào nói gì. Đây là loại câu hỏi mà không chạy analyze-spec thì sẽ phát hiện lúc đang code, hoặc tệ hơn: lúc user Nhật gửi đơn thất bại.
+
+## 7 · Decision Log 🆕
+
+| DEC-ID | Đóng QA | Quyết định | Lý do | Phương án đã loại | Ai chốt / Khi nào / Kênh | REQ ảnh hưởng |
+|---|---|---|---|---|---|---|
+| **DEC-01** | QA-04 | Form liên hệ **giữ nguyên** rule SĐT cũ; tách rule riêng cho form ứng tuyển | Form liên hệ không cần gọi lại nên không có nhu cầu nhận số cố định. Đổi chung làm rộng phạm vi test không lý do | *Đổi chung một validator* — loại vì kéo theo regression test cả form liên hệ mà không có lợi ích nghiệp vụ | 田中さん · 2026-08-04 · họp weekly | REQ-03 |
+
+**Còn treo:** QA-01, QA-02, QA-03 — chưa có `DEC-*` nào đóng. Vì QA-01 và QA-03 là `🔴 BLOCKER` nên Status vẫn **BLOCKED**.
+
+👀 **Ba chỗ dễ làm sai ở section này:**
+
+- **Bảng rỗng ở lần chạy đầu là đúng.** Analyze-spec chạy *trước* khi hỏi khách, nên chưa có quyết định nào là chuyện thường. Ghi "chưa có quyết định nào" — **không** nặn ra một dòng `DEC-*` từ suy luận của mình. Suy luận thì thuộc `[Inferred]`, không phải quyết định.
+- **`Phương án đã loại` là cột đắt nhất.** Không có nó, sáu tháng sau người bảo trì thấy hai validator gần giống nhau sẽ gộp lại "cho gọn" — đúng cái phương án đã bị loại có lý do. Cột này rẻ hơn cuộc họp giải thích sau đó rất nhiều.
+- **`Ai chốt` phải là người thật, kênh truy được.** "Khách đồng ý" không đủ. `田中さん · họp weekly 2026-08-04` mới truy được khi sau này có tranh cãi.
+
+Để ý `DEC-01` đã kéo theo **hai** chỗ sửa ngược lên trên: REQ-03 bỏ `お問い合わせ` khỏi cột Screen, và section 3 đổi dòng form liên hệ từ `⚠ rủi ro lan` sang `✅ giữ nguyên`. Decision Log là *lịch sử*; section 3 và 4 là *hiện trạng* — ba chỗ không được nói khác nhau. Ghi `DEC-*` xong mà quên sửa hai chỗ kia là cách chắc chắn nhất để tài liệu tự mâu thuẫn.
 
 ---
 
@@ -118,5 +135,9 @@ Hệ thống PHẢI chấp nhận số điện thoại cố định 10 chữ s�
 - [ ] Mọi dòng Input Contract có **nguồn**, và nguồn đó **không phải rule validate trong code**
 - [ ] `MODIFIED` ghi **đủ** hành vi mới, không chỉ phần thêm
 - [ ] Conflict **doc ⟷ code** ghi cả hai phía, không tự phân xử
-- [ ] Còn `[BLOCKER]` → Status là **BLOCKED**
+- [ ] Còn `[BLOCKER]` chưa có `DEC-*` đóng → Status là **BLOCKED**
 - [ ] Task không đổi hành vi → ghi *"không đổi hành vi"*, **không** nặn requirement giả
+- [ ] Mọi `DEC-*` có **ai chốt · khi nào · kênh nào** — không có thì nó chưa phải quyết định
+- [ ] Mọi `DEC-*` có cột **`Phương án đã loại`** điền thật, không để trống
+- [ ] `DEC-*` nào đổi requirement → section 3 và 4 **đã sửa theo**, không để ba chỗ nói khác nhau
+- [ ] `Vì sao bây giờ` nói *vấn đề đang có*, không phải diễn giải lại `Mục tiêu`
