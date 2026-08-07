@@ -22,7 +22,7 @@ MANIFEST="$CODEX_DIR/.task-toolkit-installed"
 PREFIX="${TASK_TOOLKIT_PREFIX:-task-toolkit}"
 SEP="${TASK_TOOLKIT_SEP:-:}"
 
-SKILLS_LIST=(report task-init task-survey analyze-spec debug planning backlog-ticket release-note)
+SKILLS_LIST=(report task-init task-survey analyze-spec debug planning backlog-ticket release-note verify-claims)
 
 # _shared KHÔNG được đặt tiền tố. Mọi SKILL.md trỏ tới nó bằng '../_shared/...',
 # tức là ngang cấp trong ~/.codex/skills/ — đổi tên là gãy hết.
@@ -234,7 +234,7 @@ verify() {
     grep -q '^name:' "$f"        || { err "$s/SKILL.md thiếu 'name:'"; bad=1; }
     grep -q '^description:' "$f" || { err "$s/SKILL.md thiếu 'description:'"; nodesc=$((nodesc+1)); bad=1; }
   done
-  [ "$nodesc" = 0 ] && ok "Frontmatter: 8 skill đều có name + description"
+  [ "$nodesc" = 0 ] && ok "Frontmatter: ${#SKILLS_LIST[@]} skill đều có name + description"
 
   echo
   [ "$bad" = 0 ] && printf "  %s✅ Không phát hiện vấn đề.%s\n" "$G" "$N" \

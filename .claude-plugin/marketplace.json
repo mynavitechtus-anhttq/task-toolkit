@@ -7,7 +7,7 @@
     {
       "name": "task-toolkit",
       "source": "./",
-      "description": "Chưa biết dùng thì gõ /task-toolkit:help. Lifecycle giao việc evidence-first: task-init → task-survey → analyze-spec → (BUG: debug → RCA 5-Whys) → planning (WBS) → report BLUF 2 tầng VN/EN/JA → backlog-ticket + estimation. Kèm release-note cho cả lần release. Generic mọi repo."
+      "description": "Chưa biết dùng thì gõ /task-toolkit:help. Lifecycle giao việc evidence-first: task-init → task-survey → analyze-spec → (BUG: debug → RCA 5-Whys) → planning (WBS) → report BLUF 2 tầng VN/EN/JA → backlog-ticket + estimation. Kèm verify-claims (kiểm khẳng định có đúng sự thật) + release-note cho cả lần release. Generic mọi repo."
     }
   ]
 }

@@ -1,5 +1,5 @@
 ---
-description: "Bản đồ task-toolkit — plugin giúp gì, năm tình huống thường gặp đi qua flow nào, 8 skill làm gì. In hướng dẫn, không chạy điều tra."
+description: "Bản đồ task-toolkit — plugin giúp gì, năm tình huống thường gặp đi qua flow nào, 9 skill làm gì. In hướng dẫn, không chạy điều tra."
 ---
 
 # /task-toolkit:help
@@ -122,9 +122,10 @@ Ba thứ nó **không đoán** mà sẽ hỏi bạn một lượt: ngày giờ (
                                          WBS +       2 tầng      ticket +
                                          checklist   VN/EN/JA    estimate
                                                         │
-                                                        ▼
-                                                  "soát report này"
-                                                   thẩm định 4 trục
+                                          ┌─────────────┴─────────────┐
+                                          ▼                           ▼
+                                  report-reviewer              verify-claims
+                                  lập luận có vững?            số liệu có đúng?
 
   release-note ── NGOÀI luồng trên, chạy lúc chuẩn bị deploy cho cả lần release
 ```
@@ -139,6 +140,7 @@ Ba thứ nó **không đoán** mà sẽ hỏi bạn một lượt: ngày giờ (
 | `report` | Orchestrator: chạy đủ pipeline theo loại task rồi viết report 2 tầng |
 | `backlog-ticket` | Ticket chuẩn công ty + estimation có căn cứ từ khảo sát |
 | `release-note` | Release note + runbook deploy cho cả lần release, song ngữ EN/JA |
+| `verify-claims` | Kiểm từng khẳng định trong tài liệu **có đúng sự thật không** — số lượng, tên bảng/route, phiên bản, đường dẫn, lệnh. Dùng cho report trước khi gửi khách và tài liệu mô tả hiện trạng. Không review văn phong/cấu trúc |
 
 Nói thẳng bằng lời cũng được, không cần nhớ tên lệnh:
 
