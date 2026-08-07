@@ -7,8 +7,8 @@ description: >-
   code-evidence-method, ra bảng Claim | Cách kiểm | Thực tế | Verdict. Dùng cho
   report trước khi gửi khách, và cho tài liệu mô tả hiện trạng hệ thống
   (architecture, inventory, investigation). KHÔNG review cấu trúc, văn phong,
-  IA, hay mâu thuẫn nội tại — spec/plan dùng ce-doc-review. Trigger "kiểm số
-  liệu", "verify claim", "doc này có đúng không", "soát lại trước khi gửi".
+  IA, hay mâu thuẫn nội tại — đó là việc khác. Trigger "kiểm số liệu",
+  "verify claim", "doc này có đúng không", "soát lại trước khi gửi".
 ---
 
 # Verify Claims — tài liệu này có đúng sự thật không
@@ -17,15 +17,17 @@ description: >-
 
 ## Nó kiểm cái gì — và không kiểm cái gì
 
-Ba loại review khác nhau, đừng lẫn:
+Một tài liệu có thể sai theo ba kiểu độc lập nhau. Skill này chỉ lo **một** kiểu:
 
-| Câu hỏi | Ai lo |
+| Tài liệu sai kiểu gì | Skill này? |
 |---|---|
-| Tài liệu này **có mâu thuẫn / khả thi / đủ** không? | `ce-doc-review` |
-| Tài liệu này **có đúng sự thật** không? | ← **skill này** |
-| Report này **có gửi khách được** không (lập luận, thiên kiến, độ đọc-được) | `report-reviewer` |
+| **Sai sự thật** — con số, tên, phiên bản, đường dẫn không khớp thực tế | ✅ **đúng việc** |
+| **Mâu thuẫn / bất khả thi / thiếu** — nội dung tự đá nhau, đề xuất không làm được | ❌ ngoài phạm vi |
+| **Lập luận yếu / thiên kiến / khó đọc** — với report gửi khách | ❌ `report-reviewer` lo |
 
 **Không** làm ở đây: cấu trúc, văn phong, kiến trúc thông tin, funnel, Diataxis, đoạn văn dài ngắn, mâu thuẫn nội tại. Tài liệu mạch lạc hoàn hảo mà sai sự thật vẫn trượt ở đây; tài liệu viết lủng củng mà mọi con số đều đúng vẫn đạt.
+
+Đọc vào thấy tài liệu hoá ra là một bản **plan/spec** — đề xuất *sẽ làm gì*, chứ không mô tả *đang có gì* — thì **nói ra một câu** rằng loại này cần một kiểu soát khác, rồi vẫn kiểm phần claim kiểm được. Đừng cố mở rộng phạm vi để "soát cho đủ".
 
 Dùng cho hai loại tài liệu:
 
@@ -94,7 +96,7 @@ Bốn verdict, không có mức thứ năm:
 
 ### Thang confidence — neo vào *việc đã làm*, không vào cảm giác
 
-Mượn từ `ce-doc-review`, đổi trục cho hợp việc ở đây: neo vào **cách kiểm**, không vào độ mạnh lập luận. Năm mức, không có mức giữa:
+Neo vào **cách đã kiểm**, không vào cảm giác chắc chắn. Năm mức, không có mức giữa:
 
 | | Nghĩa | Đi đâu |
 |---|---|---|
@@ -104,7 +106,7 @@ Mượn từ `ce-doc-review`, đổi trục cho hợp việc ở đây: neo vào
 | `75` | kiểm bằng nguồn tầng 1–2, nhất quán nhiều chỗ | → danh sách vi phạm |
 | `100` | kiểm bằng **nguồn khai báo (tầng 0)** hoặc quan sát trực tiếp — không còn chỗ diễn giải | → danh sách vi phạm |
 
-Đây là chỗ **khác `ce-doc-review` có chủ ý**: bên đó `50` là FYI. Ở đây `50` nghĩa là *"tôi chưa kiểm xong"* — và một claim chưa kiểm xong không được trình bày như một lỗi đã tìm ra. Nó là công việc còn dở, ghi vào Validation notes.
+Mức `50` ở đây **không phải "lỗi nhẹ"**. Nó nghĩa là *"tôi chưa kiểm xong"* — và một claim chưa kiểm xong không được trình bày như một lỗi đã tìm ra. Nó là công việc còn dở, ghi vào Validation notes. Nhập nhèm hai thứ này làm bản kiểm trông dày hơn thực chất.
 
 **`100` đòi nguồn khai báo.** "Tôi grep thấy 12 chỗ" là `75`, không phải `100` — grep có thể sót cách gọi động. `phpunit.xml` khai bốn testsuite là `100`.
 
@@ -121,7 +123,7 @@ Bốn dạng dưới đây **không** vào bảng ở bất kỳ mức nào:
 
 ## Bước 4 — Ba việc kiểm bổ sung
 
-Ba thứ không phải claim đơn lẻ nhưng thuộc cùng câu hỏi "tài liệu này có đúng không". Lấy từ playbook của `technical-documentation`.
+Ba thứ không phải claim đơn lẻ nhưng thuộc cùng câu hỏi "tài liệu này có đúng không".
 
 ### 4.1 · Path-map drift — ba nhãn rõ ràng
 

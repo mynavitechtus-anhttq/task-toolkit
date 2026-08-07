@@ -47,7 +47,7 @@ task-survey (current-state.md + impact.md)  →  ANALYZE-SPEC  →  ┬─ featu
 
 ### Requirement là **hợp đồng hành vi**, không phải kế hoạch implement
 
-Phép thử nhanh — mượn từ OpenSpec: **nếu implementation đổi mà hành vi nhìn từ ngoài không đổi, thì nó KHÔNG thuộc requirement.**
+Phép thử nhanh: **nếu implementation đổi mà hành vi nhìn từ ngoài không đổi, thì nó KHÔNG thuộc requirement.**
 
 | ✅ Thuộc requirement | ❌ Không thuộc |
 |---|---|
@@ -88,7 +88,7 @@ Màn hình/touchpoint task đụng tới, **đối chiếu current-state.md**: c
 ### B3 — Cốt lõi (theo loại)
 - **Feature → Requirements** atomic: `REQ-ID | Screen/Flow | Requirement | Type (UI/Validation/Behavior/BusinessRule/Permission/Integration/Abnormal/I18N) | Maps to (✅/⚠/🆕 từ current-state) | Source | Confidence`. Cột `Maps to` là cầu sang planning (🆕/⚠ → WBS item; ✅ → chỉ verify).
 
-  **Mỗi requirement PHẢI kèm ≥1 scenario** dạng `WHEN … THEN …` (mượn OpenSpec). Đây là chỗ requirement trở nên **kiểm chứng được** — và là cầu trực tiếp sang unit test: mỗi scenario là một case tiềm năng.
+  **Mỗi requirement PHẢI kèm ≥1 scenario** dạng `WHEN … THEN …`. Đây là chỗ requirement trở nên **kiểm chứng được** — và là cầu trực tiếp sang unit test: mỗi scenario là một case tiềm năng.
 
   ```
   ### REQ-03 — Phí giao hàng theo hạng khách
@@ -108,7 +108,7 @@ Màn hình/touchpoint task đụng tới, **đối chiếu current-state.md**: c
 
 ### B3b — Phân loại thay đổi so với hiện trạng (delta)
 
-Ngoài phân loại theo *nguồn gốc* (Explicit/Inferred/Open), gắn thêm chiều **thay đổi gì so với hệ thống đang chạy** — mượn OpenSpec:
+Ngoài phân loại theo *nguồn gốc* (Explicit/Inferred/Open), gắn thêm chiều **thay đổi gì so với hệ thống đang chạy**:
 
 | Nhãn | Nghĩa | Bắt buộc kèm |
 |---|---|---|
@@ -222,7 +222,7 @@ Xem [`example-output.md`](example-output.md) — một `spec-analysis.md` đã �
 
 ## Những câu tự bào chữa hay gặp
 
-Bảng này để **tự soi mình** trước khi báo xong — mượn cách làm của `sdd-techtus`.
+Bảng này để **tự soi mình** trước khi báo xong.
 
 | Câu bào chữa | Sự thật |
 |---|---|
