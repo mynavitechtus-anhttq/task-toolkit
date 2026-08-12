@@ -1,6 +1,6 @@
 {
   "name": "task-toolkit",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "description": "Chưa biết dùng thì gõ /task-toolkit:help. Bộ toolkit lifecycle giao việc, tự chứa đầy đủ. Workspace tasks/{ID}/ theo 5 stage — 01-discovery · 02-plan · 03-backlog · 04-quality · 05-delivery — mỗi thư mục có README riêng nói chứa gì/ai ghi/đọc thứ tự nào. Pipeline: task-init → discovery (khi chưa có bản đồ kiến trúc) → task-survey (dependency walk) → analyze-spec (làm rõ input, grounded; Input Contract + Decision Log đóng câu hỏi khách chốt) → BUG: debug (chẩn đoán kỹ thuật, ra Immediate Cause có evidence + option fix, KHÔNG sửa code) → RCA 5-Whys → report → planning (kế hoạch fix) | FEATURE: planning (WBS + checklist tiến độ) → report BLUF 2 tầng VN/EN/JA → backlog-ticket (ticket chuẩn công ty + estimation). Kèm release-note: release note + deployment runbook cho CẢ LẦN RELEASE (auto 影響箇所マトリックス từ diff, đánh giá downtime, nháp deploy/smoke/rollback steps) — chạy như quy trình riêng, không nằm trong pipeline per-task. Mọi stage tái dùng artifact stage trước, không điều tra lại. Kèm HAI cổng kiểm độc lập trước khi gửi khách: report-reviewer (lập luận có vững) + verify-claims (mọi khẳng định kiểm được — số lượng, tên bảng/route, phiên bản, đường dẫn, lệnh, parity đa ngôn ngữ — đối chiếu nguồn khai báo/code/web, ra bảng Claim|Cách kiểm|Thực tế|Verdict; dùng được cả cho tài liệu mô tả hiện trạng). Export md/docx/pdf/xlsx. Generic mọi repo (framework autodetect, bản repo tự thắng).",
   "author": {
     "name": "anhttq"

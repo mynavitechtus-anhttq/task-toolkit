@@ -2,7 +2,7 @@
 
 Phương pháp điều tra hệ thống **mình chưa nắm kiến trúc** (lạ/legacy/multi-repo) dùng cho STAGE 3 của `/task-toolkit:report` — hiểu đúng hệ thống trước, kết luận sau. Khác `task-survey`: task-survey giả định đã hiểu repo và chỉ khảo path quanh 1 task; discovery bắt đầu từ chỗ **chưa** có bản đồ, phải dựng project context + kiến trúc trước.
 
-> **Kỹ thuật đào code** (evidence-first, chứng-minh-đừng-khẳng-định, từ vựng grep, đọc consumer-side, đối chiếu khai báo trùng lặp, uncertainty markers, multi-repo): xem [`../_shared/code-evidence-method.md`](../_shared/code-evidence-method.md). File này chỉ giữ phần **đặc thù discovery**: project context, chọn hướng đào, quy trình xác nhận từng phần, output vào report.
+> **Kỹ thuật đào code** (evidence-first, chứng-minh-đừng-khẳng-định, từ vựng grep, đọc consumer-side, đối chiếu khai báo trùng lặp, uncertainty markers, multi-repo): xem [`../../_shared/code-evidence-method.md`](../../_shared/code-evidence-method.md). File này chỉ giữ phần **đặc thù discovery**: project context, chọn hướng đào, quy trình xác nhận từng phần, output vào report.
 
 ## Vai trò: Technical Archaeologist
 

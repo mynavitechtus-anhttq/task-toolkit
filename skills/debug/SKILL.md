@@ -21,7 +21,7 @@ description: >-
 
 > **Cấu trúc workspace + skill nào ghi vào đâu**: [`../_shared/workspace-layout.md`](../_shared/workspace-layout.md) — nguồn duy nhất, đừng chép lại đường dẫn.
 
-> Ngôn ngữ giao tiếp: tiếng Việt. Artifact xuất ra theo `locale` — **`vn` mặc định**, hoặc `en`/`ja`; kế thừa `locale` của `/task-toolkit:report` khi chạy trong pipeline. Là STAGE 3 (nhánh BUG) của `/task-toolkit:report`, chạy **trước** `rca-method.md`.
+> Ngôn ngữ giao tiếp: tiếng Việt. Artifact xuất ra theo `locale` — **`vn` mặc định**, hoặc `en`/`ja`; kế thừa `locale` của `/task-toolkit:report` khi chạy trong pipeline. Là STAGE 3 (nhánh BUG) của `/task-toolkit:report`, chạy **trước** `../report/references/rca-method.md`.
 
 > **Ai nghĩ, ai gõ** — bước *phán đoán* (nêu giả thuyết, chọn hướng, chốt kết luận, quyết định đánh đổi) là của **người phụ trách**; AI chỉ đưa *câu hỏi* hoặc *lựa chọn kèm đánh đổi* khi họ bí, không kết luận thay. Bước *thao tác* (grep, chạy lệnh verify, dựng bảng, soạn nháp theo template) AI làm, người soát từng dòng. Xem README §Nguyên tắc gốc.
 
@@ -81,7 +81,7 @@ Thiếu `analyze-spec` (user gọi lẻ `/task-toolkit:debug`) → dựng Proble
 
 **Quy ước hỏi ở skill này: gộp TOÀN BỘ câu hỏi vào 1 lượt**, mỗi câu kèm lý do hỏi ("hỏi version Node vì lỗi này là regression từ một dải version cụ thể"). Không hỏi lắt nhắt.
 
-> Khác với `rca-method.md` — phỏng vấn 5-Why hỏi **từng câu một**, cố ý, để đào sâu bối cảnh ra quyết định. Hai ngữ cảnh khác nhau, không mâu thuẫn.
+> Khác với `../report/references/rca-method.md` — phỏng vấn 5-Why hỏi **từng câu một**, cố ý, để đào sâu bối cảnh ra quyết định. Hai ngữ cảnh khác nhau, không mâu thuẫn.
 
 Chỉ hỏi thứ **không tự tìm được**. Tự đọc được từ repo/log/CLI thì đi mà đọc.
 
@@ -97,7 +97,7 @@ Với MỖI ranh giới component:
 Chạy MỘT lượt thu đủ → đọc kết quả → biết ranh giới nào lệch → chỉ đào tiếp component đó.
 ```
 
-Một lượt đo đúng chỗ tiết kiệm hơn năm vòng đoán. Lệnh cụ thể theo loại hệ thống: [`diagnostic-commands.md`](diagnostic-commands.md).
+Một lượt đo đúng chỗ tiết kiệm hơn năm vòng đoán. Lệnh cụ thể theo loại hệ thống: [`references/diagnostic-commands.md`](references/diagnostic-commands.md).
 
 Không can thiệp được vào runtime (prod, không quyền) → đọc từ hệ thống theo §"Trạng thái đang chạy" của file chung; vẫn không được → `[MISSING-SOURCE]` + đưa vào "Việc khách/team cần làm".
 
@@ -158,7 +158,7 @@ Trình cho dev kèm **3 câu để họ tự soát** (không phải để AI t�
 2. Nếu nguyên nhân là cái này, còn phải quan sát được dấu hiệu gì nữa — đã thấy chưa?
 3. Còn cách giải thích nào khác cũng khớp với đúng bộ evidence này không?
 
-**Đây là input Layer 1 của `rca-method.md`.** Giao thẳng, RCA không dựng lại — nên chốt sai ở đây thì cả chuỗi 5-Why sai theo.
+**Đây là input Layer 1 của `../report/references/rca-method.md`.** Giao thẳng, RCA không dựng lại — nên chốt sai ở đây thì cả chuỗi 5-Why sai theo.
 
 ## Bước 5 — Option fix + estimate (không viết code)
 
@@ -217,7 +217,7 @@ Có workspace → ghi `tasks/{ID}/01-discovery/diagnosis-<yyyymmdd>.md`; không 
 ```
 
 Đổ tiếp:
-- (4) → **Layer 1** chuỗi Why của `rca-method.md`
+- (4) → **Layer 1** chuỗi Why của `../report/references/rca-method.md`
 - (2)(3) → `Chi tiết kỹ thuật` của report
 - (5) → `Fix & phòng tái diễn` (report) và `backlog-ticket` (estimation)
 

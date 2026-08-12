@@ -9,7 +9,9 @@ description: >-
   deep testing must go, and an explicit behaviour contract of what must NOT change. Every impact row must
   map to a concrete check in test-checklist / ut-design / testcases — that mapping is what actually
   prevents regressions. Fills tasks/{TICKET-ID}/01-discovery/current-state.md and impact.md, which feed
-  backlog tickets, UT design and reports.
+  backlog tickets, UT design and reports. Scoped to ONE task: when the architecture itself is unfamiliar
+  and needs reverse-engineering first, that is discovery-method; when the question is whether a document's
+  claims are true, that is verify-claims.
   Trigger on "khảo sát source", "survey task", "điều tra hiện trạng code", or as STAGE 2 of the /task-toolkit:report
   pipeline. Project specifics come from a runtime adapter (project-context skill / CLAUDE.md / framework
   autodetect) — never hardcoded. If the current repo has its own /task-toolkit:task-survey command, that version wins.

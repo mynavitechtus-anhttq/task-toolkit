@@ -206,7 +206,7 @@ Ba phần, thứ tự cố định:
 
 ## Ví dụ output đầy đủ
 
-Xem [`example-output.md`](example-output.md).
+Xem [`references/example-output.md`](references/example-output.md).
 
 ## Những câu tự bào chữa hay gặp
 

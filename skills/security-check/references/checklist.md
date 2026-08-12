@@ -3,6 +3,64 @@
 > **Một file, ba phần.** Phần 1 là checklist kỹ thuật dùng hằng ngày; Phần 2 là bộ yêu cầu khách gửi, giữ
 > nguyên `Requirement ID` để nộp lại được; Phần 3 nối hai bên để tra chéo.
 
+## Mục lục
+
+- [Cách dùng](#cách-dùng)
+**Phần 1 — Checklist kỹ thuật theo tầng (74 mục)**
+
+- [I. Network layer](#i-network-layer)
+- [II. Server configuration](#ii-server-configuration)
+- [III. Deployment](#iii-deployment)
+- [IV. Programming layer](#iv-programming-layer)
+- [V. Database Layer](#v-database-layer)
+- [VI. Client browser/UI Display](#vi-client-browserui-display)
+**Phần 2 — Yêu cầu từ checksheet khách (153 requirement)**
+
+- [2.1. Database security](#21-database-security)
+- [2.2. Đối sách liên quan hiển thị màn hình](#22-đối-sách-liên-quan-hiển-thị-màn-hình)
+- [2.4. Đối sách khi sử dụng HTML5](#24-đối-sách-khi-sử-dụng-html5)
+- [2.5. Đối sách khi liên kết external](#25-đối-sách-khi-liên-kết-external)
+- [2.6. Đối sách liên quan đến các xử lý quan trọng](#26-đối-sách-liên-quan-đến-các-xử-lý-quan-trọng)
+- [2.7. Đối sách khi sử dụng OS command](#27-đối-sách-khi-sử-dụng-os-command)
+- [2.8. Đối sách khi access fi;e](#28-đối-sách-khi-access-fie)
+- [2.9. Các biện pháp liên quan đến chức năng email](#29-các-biện-pháp-liên-quan-đến-chức-năng-email)
+- [2.10. Đối sách xử lý redirectory](#210-đối-sách-xử-lý-redirectory)
+- [2.11. Đối sách liên quan check input](#211-đối-sách-liên-quan-check-input)
+- [3.9. Đối sách check input](#39-đối-sách-check-input)
+- [2.12. Đối sách liên quan quản lý session](#212-đối-sách-liên-quan-quản-lý-session)
+- [3.10. Đối sách quản lý session](#310-đối-sách-quản-lý-session)
+- [2.13. Error message](#213-error-message)
+- [3.11. Đối sách error message](#311-đối-sách-error-message)
+- [2.14. Đối sách liên quan I/O của file](#214-đối-sách-liên-quan-io-của-file)
+- [3.12. Đối sách liên quan I/O của file](#312-đối-sách-liên-quan-io-của-file)
+- [2.15. Đối sách khi include file](#215-đối-sách-khi-include-file)
+- [2.16. Đối sách kiên quan character code](#216-đối-sách-kiên-quan-character-code)
+- [2.17. Sử dụng Serialized Object](#217-sử-dụng-serialized-object)
+- [3.15. Đối sách evel injection](#315-đối-sách-evel-injection)
+- [2.18. Đối sách liên quan multi-thread](#218-đối-sách-liên-quan-multi-thread)
+- [3.16. Đối sách multi-thread](#316-đối-sách-multi-thread)
+- [2.19. Đối sách liên quan XML](#219-đối-sách-liên-quan-xml)
+- [2.20. Đối sách liên quan Server-Side Template Injection](#220-đối-sách-liên-quan-server-side-template-injection)
+- [2.21. Đối sách liên quan Server‑Side Request Forgery](#221-đối-sách-liên-quan-serverside-request-forgery)
+- [Xác thực](#xác-thực)
+- [Quản lý account](#quản-lý-account)
+- [3.3. Authorization](#33-authorization)
+- [4.3. Authorization](#43-authorization)
+- [3.4. TLS](#34-tls)
+- [3.6. Service thanh toán](#36-service-thanh-toán)
+- [3.7. Quản lý khóa mã hoá](#37-quản-lý-khóa-mã-hoá)
+- [4.1 Setting của Web server](#41-setting-của-web-server)
+- [4.4. Những lưu ý trên môi trường phát triển](#44-những-lưu-ý-trên-môi-trường-phát-triển)
+- [4.5. Những lưu ý trên môi trường PROD](#45-những-lưu-ý-trên-môi-trường-prod)
+- [4.6. Bảo vệ thông tin cá nhân](#46-bảo-vệ-thông-tin-cá-nhân)
+- [HTTP securiry header](#http-securiry-header)
+- [Monitoring log](#monitoring-log)
+- [Tổng quan system architecture](#tổng-quan-system-architecture)
+- [Thể chế phát triển](#thể-chế-phát-triển)
+- [Monitoring](#monitoring)
+**Phần 3 — Ánh xạ giữa hai phần**
+
+
 ## Cách dùng
 
 - **Triage một task** → dùng **Phần 1**, chỉ lấy tầng liên quan.

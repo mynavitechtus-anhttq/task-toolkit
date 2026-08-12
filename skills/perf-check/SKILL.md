@@ -12,7 +12,9 @@ description: >-
   cold start, timeout/retry storms, storage IOPS, Redis eviction and cache stampede, batch colliding with
   peak) · load & data growth · and whether the system is observable in production at all. Trigger on "check
   performance", "task này có ảnh hưởng hiệu năng không", "trang chậm", "tối ưu tốc độ", "perf budget",
-  or as the performance gate of analyze-spec. Locale vn (default) / en / ja.
+  or as the performance gate of analyze-spec. NOT for security review (that is security-check) and NOT
+  for load testing itself — it decides what to measure and reads the numbers, it does not generate traffic.
+  Locale vn (default) / en / ja.
 ---
 
 # Perf Check — cổng hiệu năng

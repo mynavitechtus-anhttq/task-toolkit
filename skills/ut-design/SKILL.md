@@ -27,7 +27,7 @@ Thiết kế **quan điểm kiểm thử** cho phần logic task đụng tới, 
 
 Nhảy thẳng vào code thì **cả người lẫn agent** đều có xu hướng chỉ test happy path. Tách "quan điểm" thành bước riêng buộc phải liệt kê case bất thường, biên, ngoại lệ **trước** — lúc còn rẻ, và lúc còn review được bằng mắt thường.
 
-Chi tiết ba nguyên tắc nền: [`reference/principles.md`](reference/principles.md).
+Chi tiết ba nguyên tắc nền: [`references/principles.md`](references/principles.md).
 
 ## Bước 0 — Chọn đường: plugin đầy đủ hay thiết kế tại chỗ
 
@@ -51,9 +51,9 @@ Thứ tự tìm — **tự dò trước, đừng hỏi trống**:
 1. `tasks/{ID}/01-discovery/spec-analysis.md` — mục **Requirements** + **Input Contract** là nguồn tốt nhất: mỗi `WHEN … THEN …` là một case, mỗi dòng Input Contract là biên nhóm B.
 2. `tasks/{ID}/01-discovery/technical-approach.md` — ràng buộc kỹ thuật, bảo mật, môi trường.
 3. Tài liệu rời trong repo (`docs/`, spec khách, API contract, business rule).
-4. Không có gì → **STOP và hỏi**, kèm câu hỏi cụ thể (xem [`reference/spec-intake.md`](reference/spec-intake.md)).
+4. Không có gì → **STOP và hỏi**, kèm câu hỏi cụ thể (xem [`references/spec-intake.md`](references/spec-intake.md)).
 
-Chi tiết 6 lối vào của cổng spec: [`reference/spec-intake.md`](reference/spec-intake.md).
+Chi tiết 6 lối vào của cổng spec: [`references/spec-intake.md`](references/spec-intake.md).
 
 ⚠ Không có spec mà vẫn muốn đi tiếp → chỉ được viết test **mô tả hành vi hiện tại**, và phải ghi rõ nhãn `[characterization test — expected lấy từ code, chưa có spec đối chiếu]` trên từng case. Không được trình bày như test kiểm đúng.
 
@@ -71,7 +71,7 @@ Quy tắc tầng 2 — *"cái bánh kẹp"*: **đọc input (ngoài, không test
 
 ## Bước 3 — Duyệt 30 viewpoint
 
-Với **mỗi unit**, đi hết checklist [`reference/viewpoints-matrix.md`](reference/viewpoints-matrix.md) — **A→E áp cho mọi hàm**, **F chỉ khi hàm chạm đúng loại logic tương ứng**:
+Với **mỗi unit**, đi hết checklist [`references/viewpoints-matrix.md`](references/viewpoints-matrix.md) — **A→E áp cho mọi hàm**, **F chỉ khi hàm chạm đúng loại logic tương ứng**:
 
 | Nhóm | Nội dung | Số viewpoint |
 |---|---|---|
@@ -133,7 +133,7 @@ Ghi `tasks/{ID}/04-quality/ut-design.md`. Chưa có workspace → in chat + đ�
 
 ## Anti-patterns
 
-- Lấy `expected` bằng cách chạy code rồi dán output — **cấm tuyệt đối**, xem `reference/principles.md`.
+- Lấy `expected` bằng cách chạy code rồi dán output — **cấm tuyệt đối**, xem `references/principles.md`.
 - Sinh mã test trong skill này — đây là bước thiết kế, code là bước sau.
 - Duyệt viewpoint kiểu tick hàng loạt cho xong — mỗi ô phải có case hoặc lý do.
 - Dừng vì "coverage đã đẹp" — điều kiện dừng là **phủ hết viewpoint áp dụng**, không phải phần trăm.

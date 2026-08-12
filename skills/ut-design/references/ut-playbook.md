@@ -4,6 +4,18 @@
 >
 > **Nguồn tri thức đi kèm (bắt buộc đọc cùng):** [`viewpoints-matrix.md`](viewpoints-matrix.md) — chứa toàn bộ prose + ví dụ Given–When–Then của từng quan điểm. Playbook này **tham chiếu** tới nó bằng ID (A1…F10). Khi cần hiểu *ý nghĩa* một viewpoint, đọc file đó; khi cần biết *phải làm gì và khi nào coi là xong*, đọc file này.
 
+## Mục lục
+
+- [Quy ước từ khóa (RFC 2119)](#quy-ước-từ-khóa-rfc-2119)
+- [§0. Giao thức thực thi (agent PHẢI theo đúng thứ tự)](#0-giao-thức-thực-thi-agent-phải-theo-đúng-thứ-tự)
+- [§1. Guardrails — ranh giới cứng (MUST NOT)](#1-guardrails-ranh-giới-cứng-must-not)
+- [§2. Catalog quan điểm — hợp đồng máy đọc được](#2-catalog-quan-điểm-hợp-đồng-máy-đọc-được)
+- [§3. Definition of Done — cổng kiểm được bằng máy](#3-definition-of-done-cổng-kiểm-được-bằng-máy)
+- [§4. Luật viết test (MUST)](#4-luật-viết-test-must)
+- [§5. Few-shot đối chiếu (pseudocode trung lập — dịch sang framework dự án)](#5-few-shot-đối-chiếu-pseudocode-trung-lập-dịch-sang-framework-dự-án)
+- [§6. Định dạng đầu ra bắt buộc (agent PHẢI xuất đủ 4 phần)](#6-định-dạng-đầu-ra-bắt-buộc-agent-phải-xuất-đủ-4-phần)
+- [§7. Escalation / STOP (khi nào dừng thay vì đoán)](#7-escalation-stop-khi-nào-dừng-thay-vì-đoán)
+- [§8. Chống lười / làm qua loa (MUST)](#8-chống-lười-làm-qua-loa-must)
 ## Quy ước từ khóa (RFC 2119)
 
 **MUST / PHẢI**, **MUST NOT / KHÔNG ĐƯỢC**, **SHOULD / NÊN**, **MAY / CÓ THỂ**. Vi phạm một dòng **MUST/MUST NOT** = kết quả **không hợp lệ**, agent PHẢI tự sửa trước khi báo hoàn tất.

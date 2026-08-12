@@ -149,6 +149,51 @@ if (existsSync(join(ROOT, 'install.sh'))) {
   }
 }
 
+/* ── 5c · Quy ước viết skill (theo skill-creator) ─────────────────────── */
+// 5c.1 SKILL.md < 500 dòng — vượt thì tách bớt sang reference/
+for (const d of skillDirs) {
+  const n = read(`skills/${d}/SKILL.md`).split('\n').length;
+  if (n > 500) no(`${d}/SKILL.md: ${n} dòng — vượt 500, tách bớt sang reference/`);
+}
+ok(`SKILL.md: ${skillDirs.length} file đều dưới 500 dòng`);
+
+// 5c.2 reference > 300 dòng phải có mục lục
+let tocBad = 0;
+for (const f of mdFiles.filter((x) => !x.endsWith('SKILL.md'))) {
+  const src = read(f);
+  if (src.split('\n').length <= 300) continue;
+  if (!/^##\s+(Mục lục|Contents|Table of contents)/im.test(src)) {
+    no(`${f}: >300 dòng nhưng thiếu Mục lục`);
+    tocBad++;
+  }
+}
+if (!tocBad) ok('reference dài đều có mục lục');
+
+// 5c.3 description phải có cả trigger LẪN ranh giới (khi nào KHÔNG dùng)
+for (const d of skillDirs) {
+  const fm = read(`skills/${d}/SKILL.md`).match(/^---\n([\s\S]*?)\n---/)[1];
+  const m = fm.match(/^description:\s*>-?\n((?:\s{2,}.*\n)+)/m) || fm.match(/^description:\s*(.+)$/m);
+  const desc = m[1].replace(/\s+/g, ' ');
+  if (!/trigger|dùng khi|when the user/i.test(desc)) no(`${d}: description thiếu trigger phrase`);
+  if (!/\bNOT\b|do not use|not for|instead of|KHÔNG /.test(desc))
+    no(`${d}: description thiếu ranh giới "khi nào KHÔNG dùng" — 12 skill sát nhau, dễ trigger nhầm`);
+}
+ok('description: đủ trigger + ranh giới');
+
+// 5c.4 Layout chuẩn: mỗi skill chỉ có SKILL.md ở gốc, tài liệu phụ vào references/
+for (const d of skillDirs) {
+  for (const e of readdirSync(join(ROOT, 'skills', d))) {
+    const full = join(ROOT, 'skills', d, e);
+    if (statSync(full).isDirectory()) {
+      if (!['references', 'scripts', 'assets'].includes(e))
+        no(`skills/${d}/${e}/: thư mục lạ — chuẩn chỉ có references/ scripts/ assets/`);
+    } else if (e !== 'SKILL.md') {
+      no(`skills/${d}/${e}: tài liệu phụ phải nằm trong references/, không để ở gốc skill`);
+    }
+  }
+}
+ok('layout skill: SKILL.md ở gốc, phụ trợ trong references/');
+
 /* ── 6 · plugin.json khớp thư mục skills/ ────────────────────────────── */
 const pj = JSON.parse(read('.claude-plugin/plugin.json'));
 if (!pj.version) no('plugin.json thiếu version');

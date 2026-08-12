@@ -272,7 +272,7 @@ Bảo mật và hiệu năng **không nằm trong `technical-approach.md`**. Nh�
 ## Handoff
 
 - **Feature → planning**: `Requirements` (Maps to ⚠/🆕) + In-scope → WBS item. Đề nghị: "lập plan (WBS) từ requirements này?".
-- **Bug → RCA**: section 4 (Expected vs Actual + repro) = **Problem Statement** cho `rca-method.md`; RCA **tiêu thụ, không dựng lại**. Sau RCA (root cause) → planning.
+- **Bug → RCA**: section 4 (Expected vs Actual + repro) = **Problem Statement** cho `../report/references/rca-method.md`; RCA **tiêu thụ, không dựng lại**. Sau RCA (root cause) → planning.
 - **→ khách**: Open Questions mức `[BLOCKER]` phải **gửi khách chốt TRƯỚC** khi planning/RCA finalize. Khách trả lời → quay lại ghi `DEC-*` (B6), **không** để câu trả lời nằm mãi trong mail.
 - **Decision Log → backlog-ticket**: cột `Phương án đã loại` là nội dung cho phần *Note / lý do thiết kế* của ticket. Người code sau đọc ticket sẽ biết vì sao không làm cách hiển nhiên hơn.
 - **→ unit test**: section 4 (Requirements + scenario `WHEN…THEN`) là nguồn suy `expected`; section 5 (Input Contract) là nguồn cho **giá trị biên**. Không có hai thứ này thì test biên hoặc bị bỏ, hoặc bị chép lại từ code đang chạy.
@@ -294,7 +294,7 @@ Bảo mật và hiệu năng **không nằm trong `technical-approach.md`**. Nh�
 
 ## Ví dụ output đầy đủ
 
-Xem [`example-output.md`](example-output.md) — một `spec-analysis.md` đã điền, 7 section, có sẵn ba loại conflict, một Input Contract lấy từ cả ba nguồn hợp lệ, và một `DEC-*` kéo theo hai chỗ sửa ngược lên section 3 và 4. Trong đó đánh dấu 👀 những chỗ hay bị làm sai nhất.
+Xem [`references/example-output.md`](references/example-output.md) — một `spec-analysis.md` đã điền, 7 section, có sẵn ba loại conflict, một Input Contract lấy từ cả ba nguồn hợp lệ, và một `DEC-*` kéo theo hai chỗ sửa ngược lên section 3 và 4. Trong đó đánh dấu 👀 những chỗ hay bị làm sai nhất.
 
 ## Những câu tự bào chữa hay gặp
 

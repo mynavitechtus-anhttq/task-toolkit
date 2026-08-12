@@ -3,23 +3,25 @@ name: report
 description: >-
   Entrypoint/orchestrator of task-toolkit: generate a standardized, conclusion-first report for a
   task/issue/bug by running a mandatory evidence pipeline — task-survey (source dig + dependency walk),
-  system reverse-engineering when the architecture is unfamiliar (discovery-method.md), technical
+  system reverse-engineering when the architecture is unfamiliar (references/discovery-method.md), technical
   diagnosis for bugs whose cause is not yet proven (the debug skill), then 5-Whys RCA for bugs
-  (rca-method.md) — then gate against checklists and render a two-tier report (non-tech on top,
+  (references/rca-method.md) — then gate against checklists and render a two-tier report (non-tech on top,
   dev detail below) in VN (default) / EN / JA, with export to md/docx/pdf/xlsx. Trigger on "viết report",
   "báo cáo bug", "report bug/issue/task", "điều tra issue", "root cause", "tổng hợp kết quả điều tra",
   "báo cáo cho khách", "レポート作成", or when the user pastes a bug/issue/task title and asks for
   analysis + write-up. "report help" prints the skill map without running anything. Works in ANY repo —
   project specifics discovered at runtime. Does not draft tickets or PR descriptions inline — after
-  analysis it can hand off to the backlog-ticket skill (STAGE 6: ticket + estimation). Not for
-  test-case authoring.
+  analysis it can hand off to the backlog-ticket skill (STAGE 6: ticket + estimation). NOT for
+  test-case authoring, and NOT for inspecting a report that already exists — checking whether its claims
+  are true is verify-claims, checking whether its reasoning holds is the report-reviewer agent. This
+  skill writes the report; those two examine one.
 ---
 
 # Report — Entrypoint & Orchestrator
 
 > **Cấu trúc workspace + skill nào ghi vào đâu**: [`../_shared/workspace-layout.md`](../_shared/workspace-layout.md) — nguồn duy nhất, đừng chép lại đường dẫn.
 
-> Ngôn ngữ giao tiếp: tiếng Việt. Ngôn ngữ report theo `locale` — **hỏi user nếu lệnh không nêu**, mặc định `vn` khi user không chọn. Nhãn section + tone xem `templates.md`.
+> Ngôn ngữ giao tiếp: tiếng Việt. Ngôn ngữ report theo `locale` — **hỏi user nếu lệnh không nêu**, mặc định `vn` khi user không chọn. Nhãn section + tone xem `references/templates.md`.
 
 > **Ai nghĩ, ai gõ** — bước *phán đoán* (nêu giả thuyết, chọn hướng, chốt kết luận, quyết định đánh đổi) là của **người phụ trách**; AI chỉ đưa *câu hỏi* hoặc *lựa chọn kèm đánh đổi* khi họ bí, không kết luận thay. Bước *thao tác* (grep, chạy lệnh verify, dựng bảng, soạn nháp theo template) AI làm, người soát từng dòng. Xem README §Nguyên tắc gốc.
 
@@ -59,9 +61,9 @@ PIPELINE (tự chạy theo type):
                               pass thẩm định report-reviewer + rà redact PII
 
 TYPE tự nhận diện:
-  BUG            lỗi/sự cố/regression        → root cause trước    (templates.md §BUG)
-  INVESTIGATION  câu hỏi/đề xuất/so sánh     → kết luận trước      (templates.md §INVESTIGATION)
-  TASK           tiến độ/hoàn thành          → trạng thái trước    (templates.md §TASK)
+  BUG            lỗi/sự cố/regression        → root cause trước    (references/templates.md §BUG)
+  INVESTIGATION  câu hỏi/đề xuất/so sánh     → kết luận trước      (references/templates.md §INVESTIGATION)
+  TASK           tiến độ/hoàn thành          → trạng thái trước    (references/templates.md §TASK)
 
 GỌI LẺ TỪNG PHẦN (không cần full report):
   task-init <ID>          chỉ tạo workspace
@@ -100,7 +102,7 @@ Có `TICKET-ID` và cần lưu artifact → nếu `tasks/{ID}/` chưa có, chạ
 
 **Cổng vào — có bản đồ kiến trúc chưa?** (áp cho MỌI type, không riêng bug hay feature)
 
-- **Chưa** (repo lạ / legacy / multi-repo / không biết cái gì nói chuyện với cái gì) → chạy **`discovery-method.md`** TRƯỚC: Project Context (Step 0) → chọn hướng đào → Information Source Catalog → trình user xác nhận suy luận. Có bản đồ rồi mới survey được đúng chỗ.
+- **Chưa** (repo lạ / legacy / multi-repo / không biết cái gì nói chuyện với cái gì) → chạy **`references/discovery-method.md`** TRƯỚC: Project Context (Step 0) → chọn hướng đào → Information Source Catalog → trình user xác nhận suy luận. Có bản đồ rồi mới survey được đúng chỗ.
 - **Rồi** → đi thẳng bảng dưới.
 
 > `task-survey` giả định **đã hiểu repo**, chỉ khảo path quanh 1 task; `discovery` bắt đầu từ chỗ **chưa** có bản đồ. Nhầm thứ tự → survey ra một mớ path rời rạc không ghép được thành flow.
@@ -126,11 +128,11 @@ Xác định issue thuộc domain nào rồi thu evidence theo bảng — 1 issu
 **BUG** → hai bước, đúng thứ tự:
 
 1. **[debug]** — chỉ khi Immediate Cause **chưa được chứng minh** ở STAGE 2. Gọi skill **`debug`**: triage (môi trường/blast radius/dữ liệu/tái hiện) → instrument ranh giới component để biết hỏng ở ĐÂU → đối chiếu chỗ đang chạy đúng → vòng lặp 1 giả thuyết + 1 lệnh verify → chốt **Immediate Cause có evidence** + bảng option fix kèm estimate. Skill này **không sửa code**. STAGE 2 đã lộ nguyên nhân (vd lệch khai báo CI↔Dockerfile) → **bỏ qua**, đưa thẳng nguyên nhân đó xuống bước 2.
-2. **RCA 5 Whys 3 tầng** theo **`rca-method.md`** (cùng thư mục): Problem Statement đo được → Facts & Timeline → chuỗi Why 3 tầng (Immediate → Process → System Gap) với 3 luật (không dừng ở con người / counterfactual / branching) → chốt root cause tầng hệ thống. **Layer 1 lấy từ bước 1, không dựng lại.** Khi facts phải lấy từ người (user/stakeholder) → dùng kỹ thuật phỏng vấn 5W1H + Decision Context trong method, **báo user 1 câu trước khi bắt đầu hỏi**.
+2. **RCA 5 Whys 3 tầng** theo **`references/rca-method.md`** (cùng thư mục): Problem Statement đo được → Facts & Timeline → chuỗi Why 3 tầng (Immediate → Process → System Gap) với 3 luật (không dừng ở con người / counterfactual / branching) → chốt root cause tầng hệ thống. **Layer 1 lấy từ bước 1, không dựng lại.** Khi facts phải lấy từ người (user/stakeholder) → dùng kỹ thuật phỏng vấn 5W1H + Decision Context trong method, **báo user 1 câu trước khi bắt đầu hỏi**.
 
 > Cách hỏi khác nhau giữa hai bước, cố ý: `debug` gộp toàn bộ câu hỏi vào **1 lượt** (tìm sự thật kỹ thuật, cần nhanh); RCA hỏi **từng câu một** (đào bối cảnh ra quyết định, cần sâu).
 
-- **INVESTIGATION** → bảng options (Được/Mất/Effort → khuyến nghị) trên nền evidence STAGE 2. Hệ thống lạ/legacy/multi-repo thì bản đồ kiến trúc đã dựng ở STAGE 2 (`discovery-method.md`) — dùng lại, không đào lại.
+- **INVESTIGATION** → bảng options (Được/Mất/Effort → khuyến nghị) trên nền evidence STAGE 2. Hệ thống lạ/legacy/multi-repo thì bản đồ kiến trúc đã dựng ở STAGE 2 (`references/discovery-method.md`) — dùng lại, không đào lại.
 - **TASK** → kết quả đo được kèm evidence ("deploy xanh", "N/N test pass", before→after) — không phải danh sách hoạt động.
 - **Bug cũ phát hiện giữa chừng** (pre-existing): KHÔNG lờ, KHÔNG âm thầm fix — ghi repro + evidence vào mục `Phát hiện ngoài phạm vi`, đề xuất tách ticket.
 
@@ -162,10 +164,10 @@ Không có gì treo → ghi **"không còn mục nào treo"**. Đó là một k�
 ⚠ **Không tự đóng nợ hộ.** Thấy một `⚠ Cần làm` chưa xử lý thì ghi ra, đừng viết lại thành "đã cân nhắc và chấp nhận" — chấp nhận rủi ro là quyết định của người, không phải của người viết report.
 
 ### STAGE 4 — Gate (fail → quay lại stage tương ứng)
-Chạy đủ 3 checklist trong `checklists.md`: điều tra đủ / kết luận đạt / văn bản đạt. Hard rules: claim không evidence → hạ ⚠ hoặc quay lại STAGE 2; root cause là "what" → quay lại STAGE 3; TL;DR > 5 dòng hoặc core > 1 trang → cắt.
+Chạy đủ 3 checklist trong `references/checklists.md`: điều tra đủ / kết luận đạt / văn bản đạt. Hard rules: claim không evidence → hạ ⚠ hoặc quay lại STAGE 2; root cause là "what" → quay lại STAGE 3; TL;DR > 5 dòng hoặc core > 1 trang → cắt.
 
 ### STAGE 5 — Render & giao
-1. Template theo type + locale (`templates.md`); cấu trúc bất biến: `TL;DR` → tầng non-tech → `---` → `Chi tiết kỹ thuật` → `Refs`. Trình bày theo Quy tắc trong `templates.md`: icon tối thiểu (không emoji heading, không icon từng dòng), gạch đầu dòng thay đoạn văn, không ví von phi kỹ thuật, chỉ đánh dấu `[Giả định]` cho claim chưa verify.
+1. Template theo type + locale (`references/templates.md`); cấu trúc bất biến: `TL;DR` → tầng non-tech → `---` → `Chi tiết kỹ thuật` → `Refs`. Trình bày theo Quy tắc trong `references/templates.md`: icon tối thiểu (không emoji heading, không icon từng dòng), gạch đầu dòng thay đoạn văn, không ví von phi kỹ thuật, chỉ đánh dấu `[Giả định]` cho claim chưa verify.
 2. `audience=customer` → (a) chạy **pass thẩm định độc lập** theo `../../agents/report-reviewer.md` (4 trục: chống anchoring, soát evidence, soát non-tech readability, đúng thể thức) — môi trường có agent system thì chạy agent `report-reviewer` trong context riêng, không có thì tự chạy như một pass tách biệt; pass chỉ góp ý, bạn/user quyết; (b) rà **redact**: tên cá nhân, credential, URL nội bộ → vai trò/`***`.
 3. Lưu: có workspace → `tasks/{ID}/05-delivery/report-<type>-<yyyymmdd>.md` + in chat; không → in chat + đề nghị chỗ lưu. Ảnh chụp/log đính kèm → `05-delivery/evidence/`.
 4. Giao 1 message: report + 1 dòng mời chỉnh (tone/độ dài/ngôn ngữ). Kèm khối bàn giao ngắn: stage nào đã chạy, artifact nằm đâu, còn ⚠ nào mở.

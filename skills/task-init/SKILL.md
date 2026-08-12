@@ -8,7 +8,8 @@ description: >-
   Trigger on "khởi tạo task", "init task workspace", "tạo workspace cho ticket", or as STAGE 1 of the
   /task-toolkit:report pipeline when a workspace is needed but missing. If the current repo has its own
   /task-toolkit:task-init command (e.g. kaigo's version with legacy-PR fetching), that version wins —
-  this is the generic fallback. Locale vn (default) / en / ja.
+  this is the generic fallback. Creates the empty shape only — it does NOT investigate, plan or write
+  tickets; those are task-survey, planning and backlog-ticket. Locale vn (default) / en / ja.
 ---
 
 # Task Init (generic — mọi repo)

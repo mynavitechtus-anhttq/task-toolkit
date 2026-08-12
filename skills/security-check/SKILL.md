@@ -9,7 +9,9 @@ description: >-
   answers the full checklists for a release or customer submission and writes
   05-delivery/security-checklist-<date>.md. Trigger on "check bảo mật", "security review/checklist",
   "rà an ninh", "điền checksheet bảo mật", "task này có rủi ro bảo mật gì", or as the security gate of
-  analyze-spec. Locale vn (default) / en / ja.
+  analyze-spec. NOT a penetration test and not a substitute for an independent audit — it is the
+  builder's own net. For fact-checking a document use verify-claims; for reviewing argument quality use
+  report-reviewer. Locale vn (default) / en / ja.
 ---
 
 # Security Check — cổng bảo mật theo checklist
@@ -50,7 +52,7 @@ Không chạm mục nào → ghi vào `technical-approach.md` §3: **"không đ�
 
 ### Bước 2 — Triage: lọc checklist xuống phần liên quan
 
-Từ tín hiệu ở Bước 1 → mở đúng mục trong [`reference/checklist.md`](reference/checklist.md):
+Từ tín hiệu ở Bước 1 → mở đúng mục trong [`references/checklist.md`](references/checklist.md):
 
 | Tín hiệu | Phần 1 — tầng kỹ thuật | Phần 2 — nhóm yêu cầu khách |
 |---|---|---|
@@ -99,7 +101,7 @@ Mọi dòng `⚠ Cần làm` phải xuất hiện ở **`Implementation content`
 
 Trả lời **toàn bộ** checklist cho một release/hệ thống.
 
-1. **Chọn phần**: rà nội bộ → [`checklist.md`](reference/checklist.md) **Phần 1** (74 mục theo tầng). Nộp cho khách → **Phần 2** (153 requirement, **giữ nguyên `Requirement ID`, không gộp dòng**).
+1. **Chọn phần**: rà nội bộ → [`checklist.md`](references/checklist.md) **Phần 1** (74 mục theo tầng). Nộp cho khách → **Phần 2** (153 requirement, **giữ nguyên `Requirement ID`, không gộp dòng**).
 2. **Chia theo người chịu trách nhiệm** — Phần 1 có sẵn cột: `Devops/Techlead` (hạ tầng) vs `Engineer` (code). Không gộp: hai người trả lời hai phần khác nhau.
 3. **Mục bắt buộc ✓ không đạt = blocker**, phải có kế hoạch xử lý kèm ngày, không được ghi "sẽ làm sau".
 4. **Mọi câu trả lời cần evidence**: đường dẫn file · cấu hình · ảnh chụp · lệnh verify. Trả lời "Có" không kèm gì là **chưa trả lời**.
@@ -109,8 +111,8 @@ Trả lời **toàn bộ** checklist cho một release/hệ thống.
 
 | File | Dùng khi |
 |---|---|
-| [`reference/checklist.md`](reference/checklist.md) | **nguồn rule chính** — Phần 1: 74 mục kỹ thuật theo tầng · Phần 2: 153 requirement khách (ID cố định) · Phần 3: ánh xạ hai bên |
-| [`reference/owasp.md`](reference/owasp.md) | tra nhanh theo loại lỗ hổng; task dùng LLM/agent → mục AST |
+| [`references/checklist.md`](references/checklist.md) | **nguồn rule chính** — Phần 1: 74 mục kỹ thuật theo tầng · Phần 2: 153 requirement khách (ID cố định) · Phần 3: ánh xạ hai bên |
+| [`references/owasp.md`](references/owasp.md) | tra nhanh theo loại lỗ hổng; task dùng LLM/agent → mục AST |
 
 ## Guardrails
 
