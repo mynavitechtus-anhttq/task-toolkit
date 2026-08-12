@@ -170,7 +170,7 @@ install_cursor() {
 
   cat > "$f" <<RULE
 ---
-description: Khi user yêu cầu viết report / báo cáo bug / điều tra issue ("viết report", "báo cáo bug", "root cause", "/task-toolkit:report"), đọc và làm theo $SKILLS/report/SKILL.md (kèm templates.md, checklists.md, rca-method.md, discovery-method.md cùng thư mục; discovery-method trỏ tiếp tới ../_shared/code-evidence-method.md cho kỹ thuật đào code).
+description: Khi user yêu cầu viết report / báo cáo bug / điều tra issue ("viết report", "báo cáo bug", "root cause", "/task-toolkit:report"), đọc và làm theo $SKILLS/report/SKILL.md (kèm references/templates.md, references/checklists.md, references/rca-method.md, references/discovery-method.md; discovery-method trỏ tiếp tới ../../_shared/code-evidence-method.md cho kỹ thuật đào code).
 alwaysApply: false
 ---
 RULE
@@ -247,7 +247,9 @@ verify() {
       total=$((total+1))
       local resolved; resolved="$(cd "$(dirname "$f")" && cd "$(dirname "$ref")" 2>/dev/null && pwd)/$(basename "$ref")"
       [ -f "$resolved" ] || { err "tham chiếu gãy trong $(basename "$(dirname "$f")")/$(basename "$f"): $ref"; miss=$((miss+1)); bad=1; }
-    done < <(grep -ohE '\.\./_shared/[A-Za-z0-9._/-]+\.md' "$f" 2>/dev/null | sort -u)
+    # (../)+ — file trong references/ nằm sâu hơn 1 cấp nên dùng ../../_shared/.
+    # Chỉ khớp '../_shared/' sẽ cắt mất một cấp và báo gãy oan.
+    done < <(grep -ohE '(\.\./)+_shared/[A-Za-z0-9._/-]+\.md' "$f" 2>/dev/null | sort -u)
   done < <(find "$SKILLS" -name "*.md" -type f)
   [ "$miss" = 0 ] && ok "Nội bộ package: $total tham chiếu ../_shared/ đều hợp lệ"
 
