@@ -189,6 +189,7 @@ Ba phần, thứ tự cố định:
 ## Handoff
 
 - **→ `report-reviewer`**: chạy song song, không thay nhau. `verify-claims` kiểm *số liệu*, `report-reviewer` kiểm *lập luận*. Report đạt cả hai mới gửi khách.
+- **← `report-reviewer`**: mục **"Cần làm rõ"** trong góp ý của nó là danh sách claim nó **nghi nhưng không kiểm được** (agent đó chỉ có `Read`, không chạy lệnh). Dán thẳng bảng đó vào đây làm đầu vào — đỡ phải bóc claim lại từ đầu.
 - **→ `analyze-spec`**: claim `contradicted` giữa tài liệu và code chính là conflict **doc ⟷ code** — đưa vào section 6 với cả hai phía, không tự phân xử.
 - **→ khách**: claim `unverifiable` loại 7 (bên thứ ba) và loại liên quan môi trường prod thường phải hỏi khách, không tự tra được.
 
