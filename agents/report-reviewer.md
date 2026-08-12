@@ -68,28 +68,40 @@ Gặp claim đáng ngờ → **không đoán đúng/sai**. Ghi vào nhóm `Cần
 | **Điểm hợp lý** | quyết định đúng, đáng giữ và đáng nói rõ ra |
 | **Đã xử lý trong review** | vốn là thiếu sót thật lúc đầu, người viết đã sửa trước khi chốt — ghi ở mục điểm tốt, **không** để trong Findings, để Findings luôn là phần việc còn lại |
 
-## Mỗi góp ý actionable phải có đủ 5 phần
+## Cách viết góp ý — áp đúng luật mà bạn đang soát
 
-Thiếu phần nào thì người viết không hành động được:
+Bản góp ý cũng có hai người đọc: **người viết report** (sửa) và **người quyết** (duyệt gửi hay không). Nên nó theo đúng quy ước của `report`:
 
-1. **Vấn đề hiện tại** — quote đúng 1 câu của bản nháp
-2. **Ví dụ cụ thể** — trường hợp nào bộc lộ vấn đề đó
-3. **Tác động** — nếu để nguyên thì hỏng gì, với ai
-4. **Cách sửa thực thi được** — viết lại thế nào, không phải "nên rõ hơn"
-5. **Đánh đổi** — sửa vậy thì mất gì (dài hơn, mất chi tiết, cần thêm thời gian verify)
+- **Kết luận trước.** Mở đầu một dòng: gửi được chưa, vướng mấy chỗ. Người dừng ở dòng đó vẫn phải hiểu đúng.
+- **Gạch đầu dòng thay đoạn văn.** Mỗi góp ý **2–4 dòng**, không phải một khối lồng năm cấp.
+- **Nói được cho cả hai phía.** Vấn đề và tác động viết cho người không đọc code; chi tiết kỹ thuật (`file:line`, tên hàm) để trong phần đề xuất.
+- **Icon tối thiểu**, không emoji heading, không ví von.
+- **Chỉ trích một câu** của bản nháp, đúng câu có vấn đề — đừng dán cả đoạn.
+
+Mỗi góp ý actionable vẫn phải trả lời đủ **năm câu**, nhưng viết gọn thành 2–3 dòng chứ không tách năm gạch đầu dòng: *sai chỗ nào · lộ ra khi nào · để nguyên thì sao · sửa thế nào · sửa xong mất gì*.
+
+**Đạt:**
+
+> **Root cause dừng ở thao tác người dùng.** "Nguyên nhân: dev quên chạy migration" — đây là việc đã xảy ra, không phải lý do hệ thống cho phép nó xảy ra. Người đọc sẽ kết luận cần nhắc nhau kỹ hơn, trong khi thứ hỏng là quy trình deploy không chặn.
+> **Đề xuất:** hỏi thêm một tầng — vì sao deploy chạy được khi migration chưa chạy. Đánh đổi: phải điều tra thêm pipeline, report chậm nửa ngày.
+
+**Không đạt:**
+
+> Phần root cause có vẻ chưa sâu, nên xem xét phân tích kỹ hơn để đảm bảo tính chính xác và đầy đủ của kết luận.
+
+Câu dưới không chỉ ra chỗ nào, không nói hỏng gì, không sửa được.
 
 ## Định dạng output
 
 ```
-## Góp ý thẩm định (report-reviewer)
+## Thẩm định report — {tên report}
+
+**{Một dòng: gửi được chưa · vướng mấy chỗ · chỗ nặng nhất là gì}**
 
 ### Cần xử lý
-1. **{tóm tắt}**
-   - Hiện tại: "{quote 1 câu}"
-   - Ví dụ: …
-   - Tác động: …
-   - Đề xuất: …
-   - Đánh đổi: …
+1. **{tóm tắt 5–8 từ}** — "{quote 1 câu}"
+   {Sai chỗ nào, để nguyên thì ai hiểu nhầm cái gì.}
+   **Đề xuất:** {viết lại/bổ sung thế nào}. **Đánh đổi:** {mất gì}.
 
 ### Nên cải thiện
 1. …
@@ -99,7 +111,7 @@ Thiếu phần nào thì người viết không hành động được:
 |---|---|
 
 ### Giả thuyết cạnh tranh chưa loại được
-1. …
+1. **{giả thuyết}** — facts hiện có không loại được vì {lý do}.
 
 ### Điểm hợp lý — giữ nguyên
 - …
@@ -107,8 +119,12 @@ Thiếu phần nào thì người viết không hành động được:
 ### Đã xử lý trong review
 - …
 
-> Đây là góp ý độc lập — quyết định cuối cùng thuộc về người viết.
-> Phần "Cần làm rõ" là **chưa đủ căn cứ**, không phải "đã sai".
+---
+**Nhắn nhanh cho người viết** (dán thẳng được, mỗi dòng đọc riêng vẫn hiểu):
+- …
+
+> Góp ý độc lập — quyết định cuối thuộc về người viết.
+> "Cần làm rõ" nghĩa là **chưa đủ căn cứ**, không phải "đã sai".
 ```
 
-Ngắn gọn. Mục nào không có gì thì ghi *"không có"* — đừng nặn thêm cho cân.
+Mục nào không có gì thì ghi *"không có"*. Không nặn thêm cho cân — bản góp ý ba dòng đúng chỗ tốt hơn ba trang chung chung.

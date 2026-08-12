@@ -2,8 +2,6 @@
 
 > **Một file, ba phần.** Phần 1 là checklist kỹ thuật dùng hằng ngày; Phần 2 là bộ yêu cầu khách gửi, giữ
 > nguyên `Requirement ID` để nộp lại được; Phần 3 nối hai bên để tra chéo.
->
-> Nguồn: `[Techtus] Security Checklist.xlsx` · `Web application security checksheet_ver 2.2.xlsx`.
 
 ## Cách dùng
 
