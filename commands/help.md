@@ -114,31 +114,45 @@ Ba thứ nó **không đoán** mà sẽ hỏi bạn một lượt: ngày giờ (
                     ┌─────────────── nhận task / nhận bug ───────────────┐
                     ▼                                                    │
   task-init ──→ task-survey ──→ analyze-spec ──┬── BUG ──→ debug ──→ 5 Whys
-  (nếu cần)      khảo sát        làm rõ input   │       (nếu cần)     RCA
-                 dependency      đối chiếu code │                      │
-                 walk            thật           └── TASK/FEATURE ──────┤
+  (workspace)    khảo sát        làm rõ input   │       (nếu cần)     RCA
+                 + IMPACT        + hướng KT     │                      │
+                 (chống degrade) └─ cổng: security-check · perf-check   │
+                                                └── TASK/FEATURE ──────┤
                                                                        ▼
                                         planning ──→ report ──→ backlog-ticket
                                          WBS +       2 tầng      ticket +
-                                         checklist   VN/EN/JA    estimate
-                                                        │
-                                          ┌─────────────┴─────────────┐
-                                          ▼                           ▼
-                                  report-reviewer              verify-claims
-                                  lập luận có vững?            số liệu có đúng?
+                                         lịch        VN/EN/JA    estimate
+                                                        │              │
+                                          ┌─────────────┴────┐         ▼
+                                          ▼                  ▼    ut-design
+                                  report-reviewer     verify-claims  quan điểm UT
+                                  lập luận có vững?   số liệu đúng?
 
   release-note ── NGOÀI luồng trên, chạy lúc chuẩn bị deploy cho cả lần release
 ```
 
+**Workspace `tasks/{ID}/` chia 5 stage** — mỗi thư mục có README riêng nói chứa gì · ai ghi · đọc thứ tự nào:
+
+```
+01-discovery  hiện trạng · impact · yêu cầu · hướng kỹ thuật · bảo mật · hiệu năng
+02-plan       WBS + lịch gửi khách
+03-backlog    1 ticket = 1 file, index theo hạng mục
+04-quality    checklist kiểm tay · quan điểm UT · test case · kết quả chạy
+05-delivery   report · release note · evidence
+```
+
 | Skill | Làm gì |
 |---|---|
-| `task-init` | Tạo workspace 6 file chuẩn cho ticket |
-| `task-survey` | Đào source, dependency walk qua các repo liên quan → hiện trạng + phạm vi ảnh hưởng |
-| `analyze-spec` | Làm rõ yêu cầu (feature) hoặc expected vs actual (bug), **đối chiếu với code thật** để bắt chỗ spec lệch hệ thống |
+| `task-init` | Tạo workspace 5 stage cho ticket, mỗi thư mục có README + file placeholder |
+| `task-survey` | Đào source + **phân tích impact chống degrade**: không chỉ *ai gọi code tôi sửa* mà *ai đang dựa vào hành vi cũ* (thứ tự · định dạng · giá trị rỗng · tác dụng phụ · thời điểm), ràng buộc ngầm không có tham chiếu trong code, bán kính ảnh hưởng R1–R4, và hành vi **phải giữ nguyên** |
+| `analyze-spec` | Làm rõ yêu cầu (feature) hoặc expected vs actual (bug), **đối chiếu với code thật** để bắt chỗ spec lệch hệ thống. Kèm `technical-approach.md`: phương án & đánh đổi (ghi cả phương án bị loại) · ràng buộc · khác biệt môi trường · rủi ro kỹ thuật |
+| `security-check` | Cổng bảo mật theo checklist công ty (74 mục kỹ thuật + 153 requirement khách). **TASK mode**: triage 1 thay đổi → `security.md`. **AUDIT mode**: trả lời cả checklist để nộp khách |
+| `perf-check` | Cổng hiệu năng: ngân sách cụ thể (LCP · INP · CLS · TTFB · JS · API p95) + triage 6 tầng theo thứ tự chẩn đoán (TTFB → backend → frontend → mạng → hạ tầng → tải & tăng trưởng dữ liệu). Luật cứng: **đo trước, tối ưu sau** |
+| `ut-design` | Thiết kế quan điểm UT trước khi viết code test — duyệt 30 viewpoint A1–F10, ra case Given–When–Then. Cổng spec: `expected` phải suy từ spec, **không lấy từ code đang chạy** |
 | `debug` | Chẩn đoán tới nguyên nhân trực tiếp **đã verify** + bảng option fix kèm estimate. **Bỏ qua nếu khảo sát đã lộ nguyên nhân.** Không sửa code |
-| `planning` | Chia WBS + checklist tiến độ, tái dùng khảo sát — không điều tra lại |
+| `planning` | Chia WBS + checklist tiến độ, tái dùng khảo sát — không điều tra lại. Kèm `wbs-schedule.md` gửi khách (quy đổi giờ→ngày, giả định lập lịch) |
 | `report` | Orchestrator: chạy đủ pipeline theo loại task rồi viết report 2 tầng |
-| `backlog-ticket` | Ticket chuẩn công ty + estimation có căn cứ từ khảo sát |
+| `backlog-ticket` | Ticket chuẩn công ty + estimation có căn cứ. **1 ticket = 1 file** trong `03-backlog/`, index gom theo hạng mục WBS. Rollup sang `test-checklist.md` |
 | `release-note` | Release note + runbook deploy cho cả lần release, song ngữ EN/JA |
 | `verify-claims` | Kiểm từng khẳng định trong tài liệu **có đúng sự thật không** — số lượng, tên bảng/route, phiên bản, đường dẫn, lệnh. Dùng cho report trước khi gửi khách và tài liệu mô tả hiện trạng. Không review văn phong/cấu trúc |
 
@@ -147,6 +161,8 @@ Nói thẳng bằng lời cũng được, không cần nhớ tên lệnh:
 ```
 "chỉ khảo sát thôi"        "chỉ chạy 5 whys cho sự cố X"
 "chỉ tạo workspace"        "soát report này"
+"check bảo mật task này"   "task này có ảnh hưởng hiệu năng không"
+"thiết kế UT cho hàm X"    "task này đụng màn hình nào khác"
 ```
 
 ---

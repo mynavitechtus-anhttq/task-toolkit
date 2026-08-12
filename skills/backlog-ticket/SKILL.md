@@ -2,7 +2,8 @@
 name: backlog-ticket
 description: >-
   Generate standardized Backlog/Jira ticket content (title + markdown body) plus an evidence-based
-  effort estimation for ANY project, consuming task-survey output (current-state.md / impact.md) so the
+  effort estimation for ANY project, writing one file per ticket into tasks/{ID}/backlog/ with a
+  WBS-grouped README index, consuming task-survey output (current-state.md / impact.md) so the
   ticket carries real file paths, dependency-walk scope, and testable outcomes. Company-standard template:
   Description / Implementation content / Completion condition, plus Scope, Risk/Impact and Estimation.
   Project specifics (title tag, ticket-number format, layers, PR targets, path conventions, examples)
@@ -14,6 +15,8 @@ description: >-
 ---
 
 # Backlog Ticket (generic — mọi repo)
+
+> **Cấu trúc workspace + skill nào ghi vào đâu**: [`../_shared/workspace-layout.md`](../_shared/workspace-layout.md) — nguồn duy nhất, đừng chép lại đường dẫn.
 
 > Ngôn ngữ giao tiếp: tiếng Việt. **Nội dung ticket mặc định `vn`** — đổi bằng `locale`. Gõ `backlog-ticket help` → in phần Help cuối file, không chạy gì.
 
@@ -58,8 +61,8 @@ Precedence:
 
 Đây là điểm khác biệt của bản tích hợp: ticket ăn thẳng output khảo sát.
 
-- Có `tasks/{TICKET-ID}/plan.md` (do `planning` sinh) → **đọc TRƯỚC TIÊN** và hỏi ngay: *ticket này ứng với item số mấy của plan?* Plan đã cắt phạm vi rồi — xem bảng dưới.
-- Có `tasks/{TICKET-ID}/current-state.md` + `impact.md` (do `task-survey` sinh, hoặc do `/task-toolkit:report` STAGE 2) → **đọc và dùng thẳng**. Không grep lại từ đầu.
+- Có `tasks/{TICKET-ID}/02-plan/plan.md` (do `planning` sinh) → **đọc TRƯỚC TIÊN** và hỏi ngay: *ticket này ứng với item số mấy của plan?* Plan đã cắt phạm vi rồi — xem bảng dưới.
+- Có `tasks/{TICKET-ID}/01-discovery/current-state.md` + `impact.md` (do `task-survey` sinh, hoặc do `/task-toolkit:report` STAGE 2) → **đọc và dùng thẳng**. Không grep lại từ đầu.
 - Chưa có gì → chạy `task-survey {ID|mô tả}` (cùng plugin) trước, hoặc — nếu user chỉ cần nháp nhanh — grep có mục tiêu theo `PATHS` và đánh dấu `[verify in code]` ở chỗ chưa chắc.
 
 **Map `plan.md` → mục ticket** (khi có plan — 1 item của plan = 1 ticket):
@@ -100,11 +103,11 @@ Nếu survey cho thấy hành vi khách mô tả **không tồn tại** (route/c
 3 mục đầu là template công ty, **luôn có**; `Scope` bắt buộc khi đụng code có sẵn; `Risk/Impact` bắt buộc khi đổi hành vi chạy thật (infra/runtime/migration/shared component/data job); `Estimation` mặc định có (xem Bước 5). **Không chèn heading `# title` trong body** — title giao riêng.
 
 ````markdown
-## **Description**
+## Description
 
 {1–3 câu: hiện trạng + đổi gì + tại sao/kết quả mong đợi. Giải thích "tại sao", đừng chép lại lời khách.}
 
-## **Implementation content**
+## Implementation content
 
 * [ ] {Bước — tên file/function thật từ survey}
 * [ ] {Bước}
@@ -112,7 +115,7 @@ Nếu survey cho thấy hành vi khách mô tả **không tồn tại** (route/c
 * [ ] {Manual QA trên màn hình ảnh hưởng}
 * [ ] {Tạo PR tới {PR_TARGETS}}
 
-## **Completion condition / Checklist**
+## Completion condition / Checklist
 
 * [ ] {Outcome kiểm chứng được — input cụ thể, kết quả mong đợi}
 * [ ] {Outcome 2}
@@ -217,7 +220,45 @@ Quy ước: đơn vị mặc định **man-day (md)**; đổi sang story point n
 1. **Title** — 1 dòng trong code fence (copy sạch).
 2. **Body** — markdown body trong fence riêng.
 
-Sau đó: có `tasks/{TICKET-ID}/` → lưu `tasks/{TICKET-ID}/backlog.md` (ghi đè OK) và báo path 1 dòng. Kết bằng 1 dòng mời chỉnh ("siết checklist / thêm Technical Notes / đổi locale?"). Bỏ summary dài.
+### Ghi file — **một ticket một file**, KHÔNG dồn vào một `backlog.md`
+
+Có `tasks/{TICKET-ID}/` → ghi vào **thư mục** `tasks/{TICKET-ID}/03-backlog/`:
+
+```
+tasks/{TICKET-ID}/03-backlog/
+├── README.md                              ← index, gom theo hạng mục WBS của plan.md
+├── ticket-01-{slug}.md
+├── ticket-02-{slug}.md
+└── …
+```
+
+- **Tên file** `ticket-{NN}-{slug}.md` — `NN` 2 chữ số (số item trong `plan.md`, để tên tự sort đúng thứ tự thực thi), `slug` 2–4 từ kebab-case rút từ title tiếng Anh.
+- **Mỗi file**: header ngắn (Ticket no — title · WBS hạng mục · Layer · Est · Trạng thái · link về README/plan), rồi `---`, rồi **nguyên văn Title + Body** để copy thẳng sang Backlog.
+- **`README.md`**: bảng index **gom theo hạng mục WBS** — mỗi hạng mục một bảng `| # | Ticket (link) | Layer | Est | Trạng thái |`, cộng dòng đầu ghi tổng số ticket / tổng est / ngân sách đã chốt.
+
+**Vì sao không dồn một file:** một file gộp 20+ ticket là vài chục KB — không review từng phần được, không gán người theo file được, và mọi lần sửa một ticket đều đụng cả file trong diff. Một ticket một file thì mở file là copy được, và git diff chỉ ra đúng ticket vừa đổi.
+
+**Ticket bị bỏ hoặc bị gộp thì GIỮ FILE**, đánh dấu trạng thái ở header (`❌ BỎ — lý do` / `⤵ Gộp vào ticket N`) và ghi ở cột Trạng thái trong README. Nội dung của nó là nguồn khi viết ticket đã hấp thụ nó — xoá đi là mất phần đã nghĩ.
+
+### Kèm theo: cập nhật `04-quality/test-checklist.md`
+
+Sinh xong ticket thì **rollup luôn** sang checklist kiểm tay — nó là của người làm, khác `testcases/` (bộ chính thức cho tester/automation):
+
+- Mỗi ticket đóng góp các dòng `Completion condition` **kiểm được bằng tay**.
+- Mỗi màn hình/chức năng trong `Risk/Impact` (lấy từ `impact.md`) → **1 checkbox regression**.
+- Nhóm theo: Unit · Feature · Manual · Regression. Mỗi dòng ghi rõ **thuộc ticket nào**.
+
+Không rollup thì `Risk/Impact` chỉ là văn bản đọc cho vui — không ai tick, không ai biết đã kiểm hay chưa.
+
+Sinh nhiều ticket một lượt → **ghi lần lượt từng file**, xong báo 1 bảng tóm tắt (số ticket / tổng est / path). Kết bằng 1 dòng mời chỉnh ("siết checklist / thêm Technical Notes / đổi locale?"). Bỏ summary dài.
+
+### Khi ticket hấp thụ ticket khác (do cắt phạm vi)
+
+Plan bị cắt ngân sách → vài item gộp vào item khác. Ticket nhận phải:
+
+1. Có **block ghi chú đầu Body**: gộp từ ticket nào, phạm vi nào được mang sang, phạm vi nào **không** mang được (và chuyển đi đâu).
+2. Mang các checkbox của ticket bị gộp vào `Implementation content`, đánh dấu `*(từ ticket N)*`.
+3. **Cộng est có ghi dòng riêng** trong bảng Estimation, và nếu tổng est mới nhỏ hơn tổng est cũ của các ticket thành phần → ghi **cảnh báo ước lượng chật** kèm con số cũ. Đây là chỗ dễ mất dấu nhất khi cắt ngân sách.
 
 ## Tích hợp với /task-toolkit:report
 
@@ -238,6 +279,9 @@ Sau đó: có `tasks/{TICKET-ID}/` → lưu `tasks/{TICKET-ID}/backlog.md` (ghi 
 - Chế URL từ tên blade.
 - Bước implementation chung chung ("update component", "fix logic") — mỗi bước nêu file/function thật từ survey, hoặc mang `[verify in code]` nếu bỏ qua survey.
 - Estimation bằng cảm tính thay vì suy từ con số survey.
+- **Dồn nhiều ticket vào một `backlog.md`** — mỗi ticket một file trong `backlog/`, index ở `backlog/README.md` (Bước 6).
+- **Xoá file của ticket bị bỏ/bị gộp** — giữ file, đánh dấu trạng thái; nội dung đó là nguồn cho ticket đã hấp thụ nó.
+- Gộp ticket do cắt ngân sách mà **không ghi est cũ** — mất dấu chỗ ước lượng bị bóp.
 
 ## Help
 
@@ -247,5 +291,6 @@ backlog-ticket <TICKET-NUM|mô tả> [locale=vn|en|ja]
   - Repo có config .claude/backlog-ticket.config.md → repo tự thắng (project tag, PR targets, ví dụ).
   - Chưa có survey → chạy task-survey trước (hoặc grep nhanh + [verify in code]).
   - Gọi qua /task-toolkit:report sau analysis: "generate backlog + estimation" (không survey lại).
+  - Output: tasks/{ID}/backlog/ticket-NN-slug.md (1 ticket = 1 file) + backlog/README.md (index theo hạng mục WBS).
   KHÔNG dùng cho: PR description (gitflow), viết report điều tra (report).
 ```

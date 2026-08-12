@@ -22,7 +22,17 @@ MANIFEST="$CODEX_DIR/.task-toolkit-installed"
 PREFIX="${TASK_TOOLKIT_PREFIX:-task-toolkit}"
 SEP="${TASK_TOOLKIT_SEP:-:}"
 
-SKILLS_LIST=(report task-init task-survey analyze-spec debug planning backlog-ticket release-note verify-claims)
+# Danh sách skill DẪN XUẤT từ thư mục skills/ — cố ý không hardcode.
+# Hardcode là cách chắc chắn để thêm skill mới rồi quên cài nó (đã xảy ra một lần:
+# ut-design / security-check / perf-check bị bỏ sót im lặng ở bản 0.16).
+SKILLS_LIST=()
+for _d in "$SKILLS"/*/; do
+  _name="$(basename "$_d")"
+  [ "$_name" = "_shared" ] && continue
+  [ -f "$_d/SKILL.md" ] || continue
+  SKILLS_LIST+=("$_name")
+done
+unset _d _name
 
 # _shared KHÔNG được đặt tiền tố. Mọi SKILL.md trỏ tới nó bằng '../_shared/...',
 # tức là ngang cấp trong ~/.codex/skills/ — đổi tên là gãy hết.
@@ -207,6 +217,22 @@ verify() {
       done
     done
     [ "$bad" = 0 ] && ok "Codex: $n symlink, tất cả resolve được"
+
+    # skill có trong package nhưng CHƯA cài — bản cài cũ thiếu skill mới thì im lặng,
+    # người dùng gõ lệnh mới và tưởng plugin không có tính năng đó
+    local missing=()
+    for src_name in "${SKILLS_LIST[@]}"; do
+      local ln; ln="$(link_name_for "$src_name")"
+      [ -e "$CODEX_DIR/$ln" ] || [ -e "$CODEX_DIR/${ln}-2" ] || missing+=("$src_name")
+    done
+    if [ ${#missing[@]} -gt 0 ]; then
+      err "Codex: THIẾU ${#missing[@]} skill chưa cài — ${missing[*]}"
+      info "     ${D}chạy lại 'bash install.sh' để cài bổ sung${N}"
+      bad=1
+    else
+      ok "Codex: đủ ${#SKILLS_LIST[@]} skill của package"
+    fi
+
     if [ ! -e "$CODEX_DIR/_shared" ]; then
       err "Codex: THIẾU _shared — tham chiếu '../_shared/...' sẽ gãy"; bad=1
     fi

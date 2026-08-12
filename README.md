@@ -101,13 +101,19 @@ Nó đọc chung kho artifact đó, nhưng neo vào **release diff** (`staging..
 | Thành phần | File | Vai trò | Dùng lẻ khi |
 |---|---|---|---|
 | `report` | `skills/report/SKILL.md` | Entrypoint + orchestrator + router | Cần report hoàn chỉnh |
-| `task-init` | `skills/task-init/` | Tạo workspace 6 file chuẩn (generic mọi repo) | Bắt đầu task mới |
-| `task-survey` | `skills/task-survey/` | Đào source + dependency walk → current-state/impact | Cần khảo sát/impact riêng |
+| `task-init` | `skills/task-init/` | Tạo workspace **5 stage** (`01-discovery` → `05-delivery`), mỗi thư mục có README + file placeholder ghi rõ skill nào sẽ điền | Bắt đầu task mới |
+| `task-survey` | `skills/task-survey/` | Đào source + **impact analysis chống degrade** → `current-state.md` / `impact.md`. Không chỉ *ai gọi code tôi sửa* mà *ai đang dựa vào hành vi cũ*, ràng buộc ngầm, bán kính R1–R4, hành vi phải giữ nguyên | Cần khảo sát/impact riêng |
 | `analyze-spec` | `skills/analyze-spec/` | Làm rõ input task (feature→requirements / bug→expected vs actual) ⟷ current-state + open-questions (grounded) | Mọi task, sau survey |
 | `debug` | `skills/debug/` | **Chẩn đoán kỹ thuật** (nhánh BUG, có điều kiện): triage → instrument ranh giới component → đối chiếu chỗ chạy đúng → 1 giả thuyết + 1 lệnh verify/lần → Immediate Cause có evidence + option fix kèm estimate. **Không sửa code** — nuôi Layer 1 cho RCA | "điều tra bug", "chưa rõ nguyên nhân kỹ thuật" |
+| `security-check` | `skills/security-check/` | **Cổng bảo mật** theo checklist công ty (74 mục kỹ thuật + 153 requirement khách + OWASP). TASK mode triage 1 thay đổi; AUDIT mode trả lời cả checklist để nộp khách | Task chạm auth/dữ liệu/input/file/hạ tầng/phụ thuộc ngoài |
+| `perf-check` | `skills/perf-check/` | **Cổng hiệu năng**: ngân sách cụ thể + triage 6 tầng theo thứ tự chẩn đoán (TTFB → backend → frontend → mạng → hạ tầng → tải & tăng trưởng dữ liệu). Luật cứng **đo trước, tối ưu sau** | Task chạm query/danh sách/tài nguyên/mạng/xử lý nặng/hạ tầng |
+| `ut-design` | `skills/ut-design/` | Thiết kế **quan điểm UT** trước khi viết mã test — 30 viewpoint A1–F10, case Given–When–Then. Cổng spec: `expected` suy từ spec, không lấy từ code đang chạy | Trước khi viết unit test |
+| `verify-claims` | `skills/verify-claims/` | Kiểm từng **khẳng định** trong tài liệu có đúng sự thật không — số lượng, tên bảng/route, phiên bản, đường dẫn, lệnh | Trước khi gửi khách |
 | `planning` | `skills/planning/` | WBS overview + checklist tiến độ, tái dùng survey/spec (generic; est unit qua adapter) | "lập kế hoạch", trước tickets |
 | `backlog-ticket` | `skills/backlog-ticket/` | Sinh title + body ticket chuẩn công ty + estimation, tái dùng survey (generic; project specifics qua adapter) | "tạo backlog", sau `/task-toolkit:report`/task-toolkit:planning |
 | `release-note` | `skills/release-note/` | **Per-release** (N ticket): release note + deployment runbook, auto 影響箇所マトリックス từ diff, đánh giá downtime, nháp deploy/smoke/rollback. Song ngữ EN/JA | Lúc chuẩn bị deploy — **quy trình riêng, ngoài pipeline** |
+| **Workspace layout** | `skills/_shared/workspace-layout.md` | **Nguồn duy nhất** của cấu trúc `tasks/{ID}/` — cây thư mục, bảng *skill nào ghi vào đâu*, và các ràng buộc chéo giữa stage. Mọi skill trỏ vào đây, không chép lại đường dẫn | — (thư viện) |
+| **Impact analysis** | `skills/_shared/impact-analysis.md` | **Phương pháp impact 7 bước** — phân loại thay đổi · chiều xuôi 3 tầng · **chiều ngược (ai dựa vào hành vi cũ)** · ràng buộc ngầm · bán kính R1–R4 · impact → lưới kiểm · hợp đồng hành vi | — (thư viện) |
 | **Code-evidence method** | `skills/_shared/code-evidence-method.md` | **Kỹ thuật đào code dùng chung** — evidence-first, chứng-minh-đừng-khẳng-định, từ vựng grep, dependency walk (app+infra), đối chiếu khai báo trùng lặp, đọc consumer-side, uncertainty markers. `task-survey` / `discovery-method` / `analyze-spec` / `release-note` đều trỏ vào đây cho phần "how" | — (thư viện kỹ thuật, không gọi trực tiếp) |
 | Diagnostic commands | `skills/debug/diagnostic-commands.md` | Thư viện lệnh chẩn đoán theo loại hệ thống (DB, service, runtime, network, dependency, container/CI) + luật an toàn read-only + snapshot "máy tôi chạy được" | — (dùng trong `debug`) |
 | RCA method | `skills/report/rca-method.md` | Phương pháp 5 Whys 3 tầng (STAGE 3 cho BUG, chạy SAU `debug`) — Layer 1 là input, không dựng lại | "chỉ chạy 5 whys cho sự cố X" |
@@ -115,7 +121,8 @@ Nó đọc chung kho artifact đó, nhưng neo vào **release diff** (`staging..
 | Templates | `skills/report/templates.md` | 3 template BUG/INVESTIGATION/TASK + nhãn section & tone VN/EN/JA | — |
 | Checklists | `skills/report/checklists.md` | 3 gate chất lượng | — |
 | Reviewer | `agents/report-reviewer.md` | Thẩm định độc lập trước khi gửi khách (4 trục, chỉ góp ý) | "soát report này trước khi mình gửi" |
-| Help | `commands/help.md` | Bản đồ dùng package — gõ gì cho tình huống nào, pipeline chạy thứ tự nào, 8 skill làm gì | `/task-toolkit:help` khi chưa biết bắt đầu |
+| Help | `commands/help.md` | Bản đồ dùng package — gõ gì cho tình huống nào, pipeline chạy thứ tự nào, mỗi skill làm gì | `/task-toolkit:help` khi chưa biết bắt đầu |
+| Selftest | `scripts/selftest.mjs` | Kiểm **tính nhất quán nội bộ của plugin** (không kiểm code dự án): frontmatter · link nội bộ · đường ghi khớp workspace-layout · tham chiếu skill có thật · help/README biết đủ skill | `node scripts/selftest.mjs` sau mỗi lần sửa plugin |
 | Installer | `install.sh` | Cài cho Codex/Cursor/Claude, phát hiện trùng tên, luôn tạo `_shared`, tự kiểm sau khi cài. Có `--verify` và `--uninstall` | Lúc cài hoặc kiểm bản đã cài |
 
 > `task-init`/`task-survey` tự nhường chỗ nếu repo đang làm có command riêng cùng tên (bản repo đã tune theo kiến trúc dự án luôn thắng) — repo không có thì bản generic tự phát hiện framework (Laravel/Next/Rails/Spring/Movable Type…).

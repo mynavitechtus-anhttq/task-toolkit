@@ -17,6 +17,8 @@ description: >-
 
 # Report — Entrypoint & Orchestrator
 
+> **Cấu trúc workspace + skill nào ghi vào đâu**: [`../_shared/workspace-layout.md`](../_shared/workspace-layout.md) — nguồn duy nhất, đừng chép lại đường dẫn.
+
 > Ngôn ngữ giao tiếp: tiếng Việt. Ngôn ngữ report theo `locale` — **hỏi user nếu lệnh không nêu**, mặc định `vn` khi user không chọn. Nhãn section + tone xem `templates.md`.
 
 > **Ai nghĩ, ai gõ** — bước *phán đoán* (nêu giả thuyết, chọn hướng, chốt kết luận, quyết định đánh đổi) là của **người phụ trách**; AI chỉ đưa *câu hỏi* hoặc *lựa chọn kèm đánh đổi* khi họ bí, không kết luận thay. Bước *thao tác* (grep, chạy lệnh verify, dựng bảng, soạn nháp theo template) AI làm, người soát từng dòng. Xem README §Nguyên tắc gốc.
@@ -138,7 +140,7 @@ Chạy đủ 3 checklist trong `checklists.md`: điều tra đủ / kết luận
 ### STAGE 5 — Render & giao
 1. Template theo type + locale (`templates.md`); cấu trúc bất biến: `TL;DR` → tầng non-tech → `---` → `Chi tiết kỹ thuật` → `Refs`. Trình bày theo Quy tắc trong `templates.md`: icon tối thiểu (không emoji heading, không icon từng dòng), gạch đầu dòng thay đoạn văn, không ví von phi kỹ thuật, chỉ đánh dấu `[Giả định]` cho claim chưa verify.
 2. `audience=customer` → (a) chạy **pass thẩm định độc lập** theo `../../agents/report-reviewer.md` (4 trục: chống anchoring, soát evidence, soát non-tech readability, đúng thể thức) — môi trường có agent system thì chạy agent `report-reviewer` trong context riêng, không có thì tự chạy như một pass tách biệt; pass chỉ góp ý, bạn/user quyết; (b) rà **redact**: tên cá nhân, credential, URL nội bộ → vai trò/`***`.
-3. Lưu: có workspace → `tasks/{ID}/task-toolkit:report-<type>-<yyyymmdd>.md` + in chat; không → in chat + đề nghị chỗ lưu.
+3. Lưu: có workspace → `tasks/{ID}/05-delivery/report-<type>-<yyyymmdd>.md` + in chat; không → in chat + đề nghị chỗ lưu. Ảnh chụp/log đính kèm → `05-delivery/evidence/`.
 4. Giao 1 message: report + 1 dòng mời chỉnh (tone/độ dài/ngôn ngữ). Kèm khối bàn giao ngắn: stage nào đã chạy, artifact nằm đâu, còn ⚠ nào mở.
 
 ### STAGE 6 — Handoff (tùy chọn, sau khi giao report)
@@ -159,7 +161,7 @@ Mặc định output là `.md`. Convert theo bảng — luôn convert TỪ file 
 
 | Định dạng | Cách làm | Ghi chú |
 |---|---|---|
-| `.md` | mặc định — `tasks/{ID}/task-toolkit:report-<type>-<yyyymmdd>.md` | nguồn chân lý |
+| `.md` | mặc định — `tasks/{ID}/05-delivery/report-<type>-<yyyymmdd>.md` | nguồn chân lý |
 | `.docx` | `pandoc report.md -o report.docx`; môi trường có skill/tool docx chuyên dụng thì dùng để có template đẹp | giữ nguyên bảng, heading |
 | `.pdf` | `pandoc report.md -o report.pdf --pdf-engine=typst -V mainfont="Helvetica Neue" -V monofont="Menlo"` (engine: `brew install typst`; PHẢI truyền mainfont/monofont — thiếu sẽ lỗi "font fallback list must not be empty"; report có tiếng Nhật → thêm font CJK vd `-V mainfont="Hiragino Sans"`) | hoặc skill/tool pdf của môi trường nếu có |
 | `.xlsx` / `.csv` | report là văn bản nên chỉ export CÁC BẢNG (impact, kết quả, checklist); có tool xlsx thì dùng, không thì ghi CSV từng bảng | không nhét cả report vào Excel |

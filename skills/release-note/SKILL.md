@@ -18,6 +18,8 @@ description: >-
 
 # Release Note / Deployment Runbook (per-release — quy trình riêng)
 
+> **Cấu trúc workspace + skill nào ghi vào đâu**: [`../_shared/workspace-layout.md`](../_shared/workspace-layout.md) — nguồn duy nhất, đừng chép lại đường dẫn.
+
 > Ngôn ngữ giao tiếp: tiếng Việt. **Output SONG NGỮ EN/JA** — cả nhãn section lẫn nội dung đều viết 2 thứ tiếng (như template công ty: `詳細 / DETAIL`, và mỗi mô tả có dòng EN + dòng JA, phân cách `ーーーー` như file mẫu). Gõ `release-note help` → in Help cuối file, không chạy gì.
 
 > **Ai nghĩ, ai gõ** — bước *phán đoán* (nêu giả thuyết, chọn hướng, chốt kết luận, quyết định đánh đổi) là của **người phụ trách**; AI chỉ đưa *câu hỏi* hoặc *lựa chọn kèm đánh đổi* khi họ bí, không kết luận thay. Bước *thao tác* (grep, chạy lệnh verify, dựng bảng, soạn nháp theo template) AI làm, người soát từng dòng. Xem README §Nguyên tắc gốc.
@@ -217,6 +219,17 @@ steps         : prep[] · deployment[] · smoke[] · rollback[]
 | Format | Layout | Cách |
 |---|---|---|
 | **md** | **Nguồn chân lý** — heading mỗi khối, matrix là bảng tick ✓, steps là bảng | viết trực tiếp; lưu `tasks/release-<yyyymmdd>.md` hoặc chỗ user chỉ định |
+
+### Hai tầng release note — đừng lẫn
+
+| | Phạm vi | File | Ai viết |
+|---|---|---|---|
+| **Tầng task** | 1 ticket đóng góp gì vào release | `tasks/{ID}/05-delivery/release-note.md` | người làm task, ngay khi xong |
+| **Tầng release** | cả lần release, N ticket | `tasks/release-<yyyymmdd>.md` | skill này, **gom từ tầng task** |
+
+Tầng task ghi đúng 4 thứ: *đổi gì (1–3 câu cho người không đọc code)* · *vùng bị ảnh hưởng* · *cần thao tác gì khi deploy (migration, biến môi trường, clear cache…)* · *lùi thế nào*. Chưa deploy thì để nguyên placeholder **"Chưa triển khai release"**.
+
+Bước 3 (enrich) **đọc tầng task trước**, chỉ fallback sang PR body khi ticket không đi qua toolkit. Đây là nguồn chính xác hơn PR title vì nó do người làm viết lúc còn nhớ, không phải suy ngược từ diff.
 | **xlsx** | Đúng template công ty | **copy `TEMPLATE_XLSX` rồi ghi theo dòng** — KHÔNG dựng lại layout (template có merged cell) |
 | **pdf** | Landscape (matrix rộng) hoặc tách matrix ra bảng riêng | `pandoc release.md -o release.pdf --pdf-engine=typst -V mainfont=... ` (JA → thêm font CJK) |
 | **docx** | Dọc; matrix tách bảng riêng nếu tràn | `pandoc release.md -o release.docx` |

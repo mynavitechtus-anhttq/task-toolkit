@@ -19,6 +19,8 @@ description: >-
 
 # Debug — Chẩn đoán kỹ thuật
 
+> **Cấu trúc workspace + skill nào ghi vào đâu**: [`../_shared/workspace-layout.md`](../_shared/workspace-layout.md) — nguồn duy nhất, đừng chép lại đường dẫn.
+
 > Ngôn ngữ giao tiếp: tiếng Việt. Artifact xuất ra theo `locale` — **`vn` mặc định**, hoặc `en`/`ja`; kế thừa `locale` của `/task-toolkit:report` khi chạy trong pipeline. Là STAGE 3 (nhánh BUG) của `/task-toolkit:report`, chạy **trước** `rca-method.md`.
 
 > **Ai nghĩ, ai gõ** — bước *phán đoán* (nêu giả thuyết, chọn hướng, chốt kết luận, quyết định đánh đổi) là của **người phụ trách**; AI chỉ đưa *câu hỏi* hoặc *lựa chọn kèm đánh đổi* khi họ bí, không kết luận thay. Bước *thao tác* (grep, chạy lệnh verify, dựng bảng, soạn nháp theo template) AI làm, người soát từng dòng. Xem README §Nguyên tắc gốc.
@@ -204,7 +206,7 @@ Kèm: **file/thành phần sẽ đụng**, **cách verify sau khi fix**, và **[
 
 ## Output & bàn giao
 
-Có workspace → ghi `tasks/{ID}/task-toolkit:debug-<yyyymmdd>.md`; không → giữ in-context.
+Có workspace → ghi `tasks/{ID}/01-discovery/diagnosis-<yyyymmdd>.md`; không → giữ in-context.
 
 ```
 1. Issue statement + triage (môi trường | blast radius | dữ liệu | tái hiện)

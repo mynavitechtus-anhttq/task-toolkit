@@ -5,7 +5,11 @@ description: >-
   into a clarified, code-grounded pack: what is being asked (feature: requirements Explicit/Inferred/Open;
   bug: expected vs actual + repro + scope), the related screens/touchpoints, an INPUT CONTRACT (valid
   range, boundaries and required-ness per parameter, each with the SOURCE that proves it was not derived
-  from the implementation), and customer-facing open questions & conflicts. GROUNDED by the prior task-survey (reads current-state.md/impact.md) so conflict
+  from the implementation), and customer-facing open questions & conflicts. Also emits
+  01-discovery/technical-approach.md — options and trade-offs with the rejected ones recorded, technical
+  constraints, a mandatory SECURITY section, per-environment differences and infra touchpoints, technical
+  risks with early-warning signs, and the gotchas found during survey — whenever the task has more than one
+  viable approach or touches auth/data/secrets/infra/NFRs. GROUNDED by the prior task-survey (reads current-state.md/impact.md) so conflict
   detection is against real code ("spec says X but the system does Y", "the route described doesn't
   exist"), not the document alone. Runs AFTER task-survey for every task type, then hands off: feature →
   planning; bug → RCA (feeds its Problem Statement). Not for test-case authoring (that is the QC
@@ -15,6 +19,8 @@ description: >-
 ---
 
 # Analyze Spec (bản toolkit — làm rõ input task, grounded by survey)
+
+> **Cấu trúc workspace + skill nào ghi vào đâu**: [`../_shared/workspace-layout.md`](../_shared/workspace-layout.md) — nguồn duy nhất, đừng chép lại đường dẫn.
 
 > Ngôn ngữ giao tiếp: tiếng Việt. Output theo `locale` (mặc định vn). Gõ `analyze-spec help` → in Help cuối file, không chạy gì.
 
@@ -40,7 +46,7 @@ task-survey (current-state.md + impact.md)  →  ANALYZE-SPEC  →  ┬─ featu
 ## Bước 1 — Gom nguồn + đọc baseline (BẮT BUỘC)
 
 - **Input sources**: ticket khách (dán content trực tiếp cũng được) / BRD / feature doc / screen detail / API docs / business rule / acceptance criteria; với bug: mô tả lỗi + expected + steps + screenshot/log.
-- **Baseline code** (mấu chốt): đọc `tasks/{ID}/current-state.md` (gap ✅⚠🆕❌) + `impact.md` (dependency walk) mà **task-survey đã sinh**. Chưa có → chạy `task-survey` trước (không grounded thì conflict/expected yếu).
+- **Baseline code** (mấu chốt): đọc `tasks/{ID}/01-discovery/current-state.md` (gap ✅⚠🆕❌) + `impact.md` (dependency walk) mà **task-survey đã sinh**. Chưa có → chạy `task-survey` trước (không grounded thì conflict/expected yếu).
 - Cần **tự đối chiếu thêm một điểm code** cho conflict doc⟷code (đọc phía consumer, đọc cả unit, sinh lệnh verify): áp [`../_shared/code-evidence-method.md`](../_shared/code-evidence-method.md). Bản chất analyze-spec **tiêu thụ** survey; chỉ mở code trực tiếp khi cần chứng minh một mâu thuẫn cụ thể — vẫn không survey lại từ đầu.
 
 ## Nguyên tắc phân tích
@@ -175,7 +181,7 @@ Hai luật:
 
 Khi **mọi** `QA-*` mức `🔴 BLOCKER` đã có `DEC-*` đóng → Status chuyển `BLOCKED → READY`. Đây là quy tắc kiểm được, không phải cảm nhận "chắc đủ rồi".
 
-## Output — 7 section (lưu `tasks/{ID}/spec-analysis.md`)
+## Output — 7 section (lưu `tasks/{ID}/01-discovery/spec-analysis.md`)
 
 Thứ tự cố định, dùng bảng:
 
@@ -189,9 +195,79 @@ Thứ tự cố định, dùng bảng:
 6. **Open Questions / Conflicts** — `QA-ID | Level (BLOCKER/CLARIFY) | Issue | Source A | Source B / Missing / Code-reality | Impact | Câu hỏi cho khách`.
 7. **Decision Log** 🆕 — `DEC-ID | Đóng QA | Quyết định | Lý do | Phương án đã loại | Ai chốt / Khi nào / Kênh | REQ ảnh hưởng`. Lần chạy đầu bảng này thường **rỗng** — đó là bình thường, ghi *"chưa có quyết định nào"*. Nó được điền dần khi khách trả lời, và chính nó quyết định lúc nào Status thành `READY`.
 
-Read-only mặc định (in chat); có workspace + user đồng ý lưu → ghi `tasks/{ID}/spec-analysis.md`.
+Read-only mặc định (in chat); có workspace + user đồng ý lưu → ghi `tasks/{ID}/01-discovery/spec-analysis.md`.
 
 **Chạy lại trên cùng task**: giữ nguyên `DEC-*` cũ, chỉ thêm dòng mới. Xoá lịch sử quyết định là mất đúng thứ section này sinh ra để giữ.
+
+## Output thứ hai — `01-discovery/technical-approach.md`
+
+`spec-analysis.md` trả lời **"khách muốn gì"**. File này trả lời **"đi đường nào và phải cẩn thận chỗ nào"** — hai câu hỏi khác nhau, hai người đọc khác nhau (PO vs dev/infra), nên tách file.
+
+**Sinh khi có ít nhất một trong bốn dấu hiệu** (không có dấu hiệu nào → để nguyên placeholder, đừng viết cho có):
+
+1. Có **≥ 2 phương án kỹ thuật** khả dĩ.
+2. Task đụng **xác thực · phân quyền · dữ liệu cá nhân · secret/khoá · phụ thuộc bên thứ ba**.
+3. Task đụng **hạ tầng, cấu hình môi trường, migration, batch/cron**, hoặc hành vi **khác nhau giữa các môi trường**.
+4. Task có **ràng buộc phi chức năng** đo được (thời gian phản hồi, tải, dung lượng, cửa sổ bảo trì).
+
+````markdown
+# Technical Approach — {task}
+
+## 1. Phương án & đánh đổi
+| Phương án | Cách làm | Được | Mất | Chi phí |
+|---|---|---|---|---|
+| A | … | … | … | … |
+
+**Chốt: {A/B}.** Vì: {lý do gắn với ràng buộc thật, không phải "sạch hơn"}.
+**Đã loại {X}** vì: {lý do} — ghi lại để sau không ai đề xuất lại vòng hai.
+**Ai chốt / khi nào:** {tên · ngày · kênh}
+
+## 2. Ràng buộc kỹ thuật
+Stack/phiên bản bắt buộc · tương thích ngược phải giữ · thứ **không được** đổi và vì sao.
+
+## 3. Bảo mật & hiệu năng — chỉ ghi KẾT LUẬN, chi tiết ở file riêng
+| Trục | Có chạm? | Kết luận 1 dòng | File chi tiết |
+|---|---|---|---|
+| Bảo mật | có/không | | `security.md` |
+| Hiệu năng | có/không | | `performance.md` |
+
+Ô "không" **phải kèm lý do** — im lặng ≠ đã kiểm.
+
+## 4. Môi trường & hạ tầng
+| Hạng mục | local | dev | stg | prod |
+|---|---|---|---|---|
+| {cấu hình / feature flag / dữ liệu khác nhau} | | | | |
+
+⚠ Ghi rõ **khác biệt giữa môi trường**: thứ bật ở prod mà tắt ở dev là chỗ test không bắt được lỗi.
+Kèm: cần đổi biến môi trường/secret nào · có downtime/cửa sổ bảo trì không · thứ tự triển khai.
+
+## 5. Rủi ro kỹ thuật
+| Rủi ro | Xác suất | Hậu quả | Dấu hiệu sớm | Giảm thiểu / Đường lùi |
+|---|---|---|---|---|
+
+## 6. Phải biết trước khi code
+Bẫy đã phát hiện lúc khảo sát: hàm dùng chung nhiều nơi · dữ liệu không như tên gọi · quy ước ngầm ·
+lệnh/thao tác dễ làm sai. Mỗi dòng kèm `file:line` hoặc evidence.
+````
+
+### Hai cổng phi chức năng — chạy tách, không nhét vào file này
+
+Bảo mật và hiệu năng **không nằm trong `technical-approach.md`**. Nhét vào đây thì chúng thành 6 dòng bảng cho có, trong khi mỗi trục có checklist riêng hàng chục mục và người đọc khác nhau.
+
+| Cổng | Chạy khi task chạm | Skill | Output |
+|---|---|---|---|
+| **Bảo mật** | xác thực/phân quyền · dữ liệu nhạy cảm · input ngoài · file · hạ tầng · phụ thuộc ngoài | `/task-toolkit:security-check` | `01-discovery/security.md` |
+| **Hiệu năng** | truy vấn dữ liệu · danh sách/phân trang · tài nguyên trang · gọi mạng · xử lý nặng · hạ tầng | `/task-toolkit:perf-check` | `01-discovery/performance.md` |
+
+`analyze-spec` **tự đánh giá 2 cổng này** và gọi skill tương ứng khi có tín hiệu. Không chạm tín hiệu nào → ghi *"không chạm"* kèm lý do vào mục 3, không tạo file rỗng.
+
+⚠ **Cổng bảo mật là bắt buộc đánh giá, không bắt buộc chạy.** Nghĩa là: luôn phải trả lời câu *"task này có chạm bảo mật không"*; trả lời "không" thì phải viết ra và chịu trách nhiệm.
+
+**Ba luật:**
+
+- Mục 1 ghi **cả phương án bị loại**. Quyết định không kèm phương án đã loại thì 3 tháng sau không ai biết nó đã được cân nhắc hay bị bỏ sót.
+- Mục 3 **không được để trống**. "Task này không liên quan bảo mật" là một kết luận, phải viết ra và chịu trách nhiệm — khác hẳn với bỏ trống vì chưa nghĩ tới.
+- Mọi dòng cite nguồn như `spec-analysis.md`. Suy đoán → `[Giả định — cách verify: …]`.
 
 ## Handoff
 
