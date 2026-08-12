@@ -81,3 +81,15 @@ Ràng buộc chéo cần giữ:
 - `01-discovery/impact.md` mỗi dòng **phải trỏ được** sang một lưới ở `04-quality/`.
 - `01-discovery/security.md` mỗi dòng `⚠ Cần làm` **phải thành checkbox** trong ticket ở `03-backlog/`.
 - `05-delivery/report-*.md` mọi claim **phải cite** file trong `01-discovery/`.
+
+## Ai tiêu thụ artifact nào — không skill nào được bỏ nguồn
+
+Ba skill cuối pipeline đọc **toàn bộ** stage trước, không chỉ 1–2 file quen thuộc. Bỏ nguồn nào là để nợ nguồn đó lọt ra ngoài:
+
+| | đọc gì | nợ gì nếu bỏ |
+|---|---|---|
+| `backlog-ticket` | `spec-analysis` · `impact` · `technical-approach` · `security` · `performance` · `ut-design` | việc phải làm nằm lại trong file phân tích, không vào sprint |
+| `report` | cả 6 trên **+** `04-quality/*` | report nói *tìm ra gì* mà giấu *còn treo gì* |
+| `release-note` | `impact` §hành vi phải giữ nguyên · `technical-approach` §môi trường · `security` · `test-report` | người duyệt deploy không biết cái gì chưa kiểm |
+
+**Luật chung:** artifact chưa có → **nói ra là thiếu**, đừng im lặng bỏ qua. Mục chưa đóng → **ghi vào output**, đừng tự kết luận là đã chấp nhận.

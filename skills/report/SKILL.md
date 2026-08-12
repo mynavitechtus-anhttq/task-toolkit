@@ -117,7 +117,7 @@ Xác định issue thuộc domain nào rồi thu evidence theo bảng — 1 issu
 | **Yêu cầu mới từ khách** (feature/batch request) | nội dung yêu cầu, spec/PR tham chiếu (kể cả repo khác — đọc qua `gh`), hệ thống tương tự đã có | Trích xuất: yêu cầu rõ / yêu cầu suy ra / **open questions cần khách confirm** (3 nhóm tách bạch); đối chiếu tham chiếu thật, không đoán từ mô tả |
 | **Email/notice từ bên thứ 3** (AWS Health, vendor EOL…) | nguyên văn notice + tra chéo trang chính thức của vendor (health dashboard, doc sự kiện) | Rút ra: deadline, phạm vi resource bị ảnh hưởng (đối chiếu inventory thật của mình), hành động vendor yêu cầu, hậu quả nếu bỏ qua |
 
-- Đã có artifact tươi trong workspace (`current-state.md`/`impact.md`) → dùng luôn, không thu lại.
+- Đã có artifact tươi trong workspace → **dùng đủ**, không chỉ `current-state.md`/`impact.md`: còn `spec-analysis.md` (yêu cầu + câu hỏi mở), `technical-approach.md` (phương án đã chốt + rủi ro), `security.md`, `performance.md`, `04-quality/*` (đã kiểm tới đâu). Report bỏ qua các file này sẽ kết luận trên nền thiếu và **giấu mất phần chưa xong** — dùng luôn, không thu lại.
 - **Artifact contract**: mọi claim trong report phải trace về evidence đã thu ở stage này (lệnh/log/doc/URL). Report KHÔNG tự bịa evidence ngoài pipeline.
 - Nguồn nào không tiếp cận được trong môi trường hiện tại → không đoán: ghi `[Giả định — cách verify]` và biến nó thành action trong "Việc khách/team cần làm".
 
@@ -133,6 +133,33 @@ Xác định issue thuộc domain nào rồi thu evidence theo bảng — 1 issu
 - **INVESTIGATION** → bảng options (Được/Mất/Effort → khuyến nghị) trên nền evidence STAGE 2. Hệ thống lạ/legacy/multi-repo thì bản đồ kiến trúc đã dựng ở STAGE 2 (`discovery-method.md`) — dùng lại, không đào lại.
 - **TASK** → kết quả đo được kèm evidence ("deploy xanh", "N/N test pass", before→after) — không phải danh sách hoạt động.
 - **Bug cũ phát hiện giữa chừng** (pre-existing): KHÔNG lờ, KHÔNG âm thầm fix — ghi repro + evidence vào mục `Phát hiện ngoài phạm vi`, đề xuất tách ticket.
+
+### STAGE 3.5 — Gom nợ còn lại (BẮT BUỘC, trước khi render)
+
+Report không chỉ nói *đã tìm ra gì*, nó phải nói **còn treo gì**. Mỗi stage trước để lại phần chưa đóng; không gom lại thì chúng biến mất khỏi tầm nhìn và thành nợ kỹ thuật im lặng.
+
+Quét đủ 6 nguồn, mỗi nguồn lấy đúng phần **chưa xong**:
+
+| Nguồn | Lấy gì |
+|---|---|
+| `01-discovery/spec-analysis.md` | `QA-*` chưa có `DEC-*` đóng — nhất là mức 🔴 BLOCKER |
+| `01-discovery/technical-approach.md` | rủi ro chưa có biện pháp · `[Giả định]` chưa verify |
+| `01-discovery/security.md` | dòng `⚠ Cần làm` và `❓ Chưa kiểm được` |
+| `01-discovery/performance.md` | mục *Chưa đo được* · chỉ số vượt ngân sách chưa xử lý |
+| `01-discovery/impact.md` | dòng impact chưa trỏ được sang lưới kiểm nào |
+| `04-quality/test-checklist.md` · `test-report.md` | mục chưa tick · case fail chưa có kết luận |
+
+Đưa thành **một mục trong report**, đặt ở tầng dưới (`Chi tiết kỹ thuật`), trừ khi có mục mức 🔴 — mục đó phải lên **tầng non-tech**:
+
+```markdown
+## Còn treo
+| Việc | Vì sao chưa đóng | Ai/khi nào | Rủi ro nếu để nguyên |
+|---|---|---|---|
+```
+
+Không có gì treo → ghi **"không còn mục nào treo"**. Đó là một kết luận, khác hẳn với bỏ trống mục này.
+
+⚠ **Không tự đóng nợ hộ.** Thấy một `⚠ Cần làm` chưa xử lý thì ghi ra, đừng viết lại thành "đã cân nhắc và chấp nhận" — chấp nhận rủi ro là quyết định của người, không phải của người viết report.
 
 ### STAGE 4 — Gate (fail → quay lại stage tương ứng)
 Chạy đủ 3 checklist trong `checklists.md`: điều tra đủ / kết luận đạt / văn bản đạt. Hard rules: claim không evidence → hạ ⚠ hoặc quay lại STAGE 2; root cause là "what" → quay lại STAGE 3; TL;DR > 5 dòng hoặc core > 1 trang → cắt.

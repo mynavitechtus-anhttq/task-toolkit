@@ -76,6 +76,21 @@ Precedence:
 | Est sơ bộ của item | **mốc đối chiếu** cho `Estimation`; lệch nhiều → nói rõ vì sao (đọc code chi tiết mới thấy), không im lặng ra số khác |
 | Thứ tự / dependency giữa các item | `Technical Notes` — ghi ticket này phụ thuộc ticket nào |
 
+**Đầu vào bắt buộc — đọc đủ 6 artifact của `01-discovery`/`02-plan`, không bỏ cái nào:**
+
+| Artifact | Rút gì vào ticket | Bỏ qua thì nợ gì |
+|---|---|---|
+| `01-discovery/spec-analysis.md` | Requirements + scenario `WHEN…THEN…` → `Completion condition`; Input Contract → biên cần test | Ticket viết theo suy đoán, tiêu chí hoàn thành không kiểm được |
+| `01-discovery/impact.md` | mục 7 (impact → lưới kiểm) → checkbox `Regression`; **mục 6 (hành vi phải giữ nguyên)** → `Completion condition` dạng "vẫn phải đúng như cũ" | Degrade: sửa xong màn A, hỏng màn B, không ai kiểm |
+| `01-discovery/technical-approach.md` | phương án **đã chốt** → `Technical Notes`; phương án **đã loại** → ghi kèm để không ai đề xuất lại | Bàn lại từ đầu giữa lúc làm |
+| `01-discovery/security.md` | **mọi dòng `⚠ Cần làm`** → 1 checkbox `Implementation content` + 1 `Completion condition` kiểm được | Nợ bảo mật nằm lại trong file, không ai làm |
+| `01-discovery/performance.md` | điểm nghẽn → bước implement; ngân sách → `Completion condition` (vd "API p95 < 200ms") | Ship xong mới biết chậm |
+| `04-quality/ut-design.md` | 1 checkbox *"viết UT theo `ut-design.md`"* + viewpoint bắt buộc | UT làm theo cảm tính hoặc bỏ luôn |
+
+⚠ **Chưa có artifact nào trong số này** → nói rõ **thiếu cái gì** trước khi sinh ticket, và đánh dấu phần tương ứng trong ticket là `[chưa phân tích]`. Sinh ticket im lặng trên nền thiếu là cách nợ kỹ thuật đi vào sprint mà không ai thấy.
+
+⚠ **`spec-analysis.md` còn `QA-*` mức 🔴 BLOCKER chưa có `DEC-*` đóng** → **báo trước khi sinh**. Ticket dựng trên câu hỏi chưa được khách trả lời sẽ phải làm lại.
+
 **Map kết quả survey → mục ticket** (gap analysis của `current-state.md` — luôn áp dụng, kể cả khi có plan):
 
 | Nhãn survey | Mục ticket |

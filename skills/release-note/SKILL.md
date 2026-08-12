@@ -98,6 +98,17 @@ Không có baseline thì lỗi cũ sẽ bị quy cho release: tester báo regres
 | bug: sửa gì ← root cause trong `report-bug-*.md` | ← PR body |
 | **nhãn** | ✅ có evidence | ⚠ **đánh dấu "suy từ PR"** |
 
+**Bốn artifact nữa phải đọc — chúng quyết định phần vận hành của release note:**
+
+| Artifact | Rút vào mục nào của release note |
+|---|---|
+| `01-discovery/impact.md` **mục 6** — hành vi phải giữ nguyên | → **smoke test sau deploy**: đây chính là danh sách "vẫn phải đúng như cũ" |
+| `01-discovery/technical-approach.md` **§4** — khác biệt môi trường | → **thao tác khi deploy**: biến môi trường phải đổi · cấu hình chỉ khác ở prod · thứ tự triển khai |
+| `01-discovery/security.md` | → mục bảo mật: cái gì đã xử lý trong release này, cái gì **hoãn** (hoãn thì phải ghi ra, không được im) |
+| `04-quality/test-report.md` · `test-checklist.md` | → **đã kiểm tới đâu**: môi trường nào đã chạy, nhóm nào chưa phủ. Không có phần này thì người duyệt deploy không biết mình đang duyệt cái gì |
+
+⚠ **Phần "chưa xong" phải xuất hiện trong release note, không được lược đi cho gọn.** Người quyết deploy cần biết cái gì chưa kiểm — biết mà vẫn đi tiếp là quyết định của họ; không biết mà đi tiếp là lỗi của bản release note.
+
 Giữ tinh thần evidence-first: mục nào suy từ PR/diff thay vì artifact thì **ghi rõ**, đừng để lẫn với mục đã verify.
 
 ## Bước 4 — Auto-tick 影響箇所マトリックス (giá trị lớn nhất — người điền tay hay sót)
