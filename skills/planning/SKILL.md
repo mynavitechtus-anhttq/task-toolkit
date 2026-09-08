@@ -136,6 +136,74 @@ Chỉ sinh khi task có **giao kèo thời gian với bên ngoài** (deadline kh
 - **Mọi con số trong lịch phải cùng nguồn với `current-state.md`.** Số site, số màn hình, số file — lịch là bản gửi khách nên số sai ở đây đắt hơn nhiều so với sai trong ghi chú nội bộ. Ghi rõ **nguồn** của số ngay tại chỗ dùng.
 - **Ngày không tự trượt theo phạm vi.** Phạm vi dày lên mà {EST_UNIT} giữ nguyên thì lịch giữ nguyên — nhưng phải ghi thành **rủi ro vượt khung**, đừng để nó im lặng biến thành trễ hạn.
 
+### Lịch nói *cái gì*, không nói *làm thế nào*
+
+Cụ thể tới mức gọi tên được thứ đang đụng vào, rồi dừng trước công thức thực thi.
+
+| Viết vào lịch | Để trong `plan.md` / ghi chú nội bộ |
+|---|---|
+| "Bỏ cơ chế gửi lệnh trực tiếp xuống máy chủ (`aws ssm send-command`)" | cú pháp và tham số của lệnh |
+| "Nâng `actions/checkout` v4 → v5" | vì sao v4 bị khai tử |
+| "Đồng bộ mã nguồn ra thư mục web, giữ nguyên danh sách loại trừ" | `rsync -a --delete-delay --delay-updates --exclude-from=…` |
+| "Viết script health check chạy sau khi đồng bộ" | `sleep 3` vì `opcache.revalidate_freq=2` |
+
+Phép thử: **tên riêng thì giữ, cờ và giá trị cấu hình thì bỏ.** Người đọc cần biết đang đụng vào cái gì, không cần biết gõ ra sao. Viết chung chung kiểu "nâng phiên bản các action" thì lại thiếu — họ không biết action nào.
+
+### Cắt chữ rỗng
+
+Xoá mọi câu không đổi hành vi người đọc. Ba dạng hay gặp:
+
+- "Không phụ thuộc mốc nào, làm được ngay" — bảng đã cho biết ngày bắt đầu
+- "Chỉ bắt đầu sau khi X ổn định" — nếu thứ tự đã hiển nhiên từ cột ngày
+- Câu giải thích lý do nối sau một điều kiện vốn đã rõ
+
+### Lịch chỉ chứa lịch
+
+Bốn thứ hay bị nhét vào nhưng thuộc chỗ khác:
+
+| Nội dung | Thuộc về |
+|---|---|
+| Bảng mốc phụ thuộc bên ngoài | ticket |
+| Bảng rủi ro tiến độ | ticket |
+| Nguồn của từng con số | ghi chú nội bộ |
+| Chi tiết kỹ thuật (cờ, ARN, đường dẫn, giá trị config) | ghi chú nội bộ |
+
+Header giữ tối thiểu — tổng {EST_UNIT} và khoảng ngày đã nằm ở dòng **Tổng** của bảng tổng quan, đừng lặp lại ở đầu file.
+
+### Bố cục: giai đoạn, không phải một bảng phẳng
+
+Task nhiều hơn ~6 hạng mục thì gom thành **4 giai đoạn** — chuẩn bị / triển khai / dựng và kiểm thử / bàn giao — mỗi giai đoạn một bảng chi tiết, phía trên là bảng tổng quan. **Một file, nhiều mục** — đừng tách thành nhiều file: deadline là một mốc, tách file làm mất đường găng.
+
+Giai đoạn "chuẩn bị" hay bị bỏ sót. Nó gồm tài liệu thiết kế và checklist cấu hình, sơ đồ, kế hoạch rollback, kịch bản kiểm thử — thứ phải có **trước** khi gõ dòng code đầu tiên.
+
+Đồng bộ hình thức trong toàn file: cùng tên cột (`Hạng mục / 項目`), cùng dạng tên dòng ("Triển khai môi trường dev", không phải "dev"), cùng có dòng `**Est:**` dưới mỗi heading giai đoạn.
+
+Trong một ô có nhiều ý thì tách bằng `<br>` — kể cả danh sách đánh số `①②③`. Đừng viết thành câu dài nối bằng dấu chấm phẩy.
+
+### Dự phòng là một dòng riêng
+
+Không giấu buffer vào từng hạng mục. Cho nó một dòng cuối bảng, làm tròn, và nói rõ dùng cho việc gì: *"trục trặc phát sinh hoặc feedback của khách"*. Không dùng tới thì lịch kết thúc sớm — ghi luôn ngày đó.
+
+### Cổng kiểm số học — chạy bằng script, không đọc bằng mắt
+
+Ba phép kiểm, bắt buộc trước khi giao và sau **mỗi lần** sửa est hoặc ngày:
+
+1. **Σ bảng tổng quan == Σ bảng chi tiết.** Lệch là lỗi.
+2. **Không ô `Start`/`Due` nào rơi vào T7/CN hoặc ngày lễ.** Kể cả ô hạn chót dành cho khách.
+3. **Xếp tuần tự theo khung ngày, không ngày nào vượt công suất.** Duyệt từng hạng mục theo thứ tự, đổ {EST_UNIT} vào các ngày làm việc trong khung `Start`→`Due`, mỗi ngày tối đa mức phân bổ. Hạng mục nào không xếp đủ = khung ngày quá hẹp.
+
+Phép 3 bắt được lỗi mắt không thấy. Lưu ý khi tự viết checker: **đừng chia đều** {EST_UNIT} cho các ngày trong khung — cách đó báo quá tải giả. Phải xếp tuần tự theo thứ tự hạng mục.
+
+Kiểm cả tính nhất quán nội dung: điều kiện dạng "sau N ngày làm việc" phải thoả được với ngày đã xếp; hạng mục A trỏ tới hạng mục B thì B phải tồn tại và nằm trước.
+
+### Đừng gọi tên bên thứ ba khi chưa chắc
+
+Suy ra tên công ty từ tên miền email hay tên user hệ thống là **suy luận**, không phải bằng chứng. Trong lịch gửi khách dùng vai trò — "bên vận hành WordPress", "bên vận hành hạ tầng". Giữ tên kèm dẫn chứng ở ghi chú nội bộ, nơi người đọc tự đánh giá được độ tin.
+
+### Cảnh báo khi sửa file lịch bằng script
+
+Lịch là bảng markdown dài, sửa nhiều vòng. **Chỉ dùng `replace` với chuỗi cố định.** Đừng cắt đoạn bằng `s[s.index(A):s.index(B)]` — nếu `B` đứng trước `A` thì lát cắt ra chuỗi rỗng, và `str.replace('', x)` trong Python chèn `x` vào **giữa mọi ký tự**, phá nát file. Nếu buộc phải cắt thì assert `index(B) > index(A)` trước.
+
 ## Bước 7 — Ghi & handoff
 
 - Có `tasks/{TICKET-ID}/` → ghi `tasks/{TICKET-ID}/02-plan/plan.md` (bảng WBS + checklists) và `02-plan/wbs-schedule.md` (nếu có Bước 6). Chưa có → in chat + đề nghị `task-init`.
