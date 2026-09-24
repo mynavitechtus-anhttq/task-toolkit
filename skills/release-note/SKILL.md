@@ -257,7 +257,7 @@ Dùng khi đã có bản md (của skill này, hoặc người viết tay) và c
 md  ──(model rút nội dung)──►  release.json  ──(script)──►  xlsx theo template
 ```
 
-### 7.1.1 — Bốn thứ BẮT BUỘC hỏi trước khi convert
+### 7.1.1 — Năm thứ BẮT BUỘC hỏi trước khi convert
 
 Bản md thường thiếu đúng những thứ chỉ người mới biết. Thiếu bất kỳ cái nào → **hỏi, không suy, không để trống cho xong**:
 
@@ -267,6 +267,7 @@ Bản md thường thiếu đúng những thứ chỉ người mới biết. Thi
 | 環境の情報 / domain môi trường | URL thật của môi trường sắp deploy | Đoán sai domain thì mọi URL trong smoke step đều vô dụng |
 | 日時 (JST) | ngày giờ release theo giờ Nhật | Quyết định cả lịch điều phối lẫn thời hạn của các đường lùi |
 | PR | số PR và nhánh đích | Không có số PR thì bước merge và bước revert đều không thực thi được |
+| バージョン / Version | số version sẽ ghi vào ô `バーション` (vd `WEB: v1.0.0`, `v1.2.0`) | Số version là do người quản lý release đánh, **không suy được** từ git/PR/md. Không được tự chế dạng `master ← staging (PR #…)` |
 
 Hỏi **gộp một lượt** cùng các câu ở Bước 6. Người dùng trả lời "để trống" thì ghi placeholder nhìn ra được ngay (`<PR>`, `TBD JST YYYY/MM/DD`) — đừng để ô rỗng, người đọc sẽ tưởng là không cần.
 
@@ -282,7 +283,7 @@ python3 scripts/fill_release_xlsx.py --data release.json --out "[Proj][PROD] Rel
 | Template mặc định | `assets/release-note-template.xlsx` — layout công ty, đã xoá sạch nội dung mẫu |
 | Ghi đè | `--template` khi repo có bản riêng (`.claude/release-note-template.xlsx`) |
 | Neo vị trí | theo **chữ** trong cột A (`DEPLOYMENT PREPARATION`, `ENGINEER DEPLOYMENT STEPS`, `SMOKE TEST`, `ROLLBACK`), không theo số dòng — template đổi bố cục vẫn chạy |
-| Thiếu chỗ | steps nhiều hơn số dòng trống thì script tự chèn dòng, kế thừa style và dời merge của các khối bên dưới |
+| Thiếu chỗ | **không chèn dòng.** Nội dung nhiều hơn slot → script báo lỗi, gom bước lại cho vừa (ví dụ gộp hai bước cùng chỗ chạy). Template là bố cục khách đã duyệt: chèn/xoá dòng làm lệch border, merge và vùng dropdown |
 | Cột matrix | `fe be aws email sms migration batch cache` → tick `✓`; khoá nào không có thì để trống |
 
 Schema JSON nằm ở docstring đầu script. Ô nào không truyền thì **giữ nguyên nội dung template**, nên convert lại nhiều lần không làm mất nhãn song ngữ.
@@ -305,8 +306,8 @@ Mở file và kiểm ba thứ, vì đây là bản gửi khách:
 - Không bịa bước vận hành (thao tác console, tên resource) — không biết thì để trống + hỏi.
 - Cột matrix không có path khớp → để trống, không tick cho "đủ bảng".
 - Không tự điền PIC / UAT / ステータス — đó là cam kết của người, không phải suy luận.
-- **[HARD]** Convert md → xlsx mà thiếu PIC · domain môi trường · ngày giờ JST · số PR thì **hỏi trước**, không tự suy (Bước 7.1.1).
-- **[HARD]** Không dựng lại layout xlsx bằng code. Luôn copy template rồi ghi theo dòng — template có merged cell, dựng lại là mất định dạng khách đã duyệt.
+- **[HARD]** Convert md → xlsx mà thiếu PIC · domain môi trường · ngày giờ JST · số PR · **số version** thì **hỏi trước**, không tự suy (Bước 7.1.1). Version tự chế từ branch/commit là sai — người đánh số, không phải AI.
+- **[HARD]** Không dựng lại layout xlsx bằng code, **không chèn/xoá dòng**, không thêm merge. Luôn copy template rồi ghi vào slot có sẵn — template có merged cell, border và dropdown theo vùng cố định; dựng lại hay chèn dòng là lệch định dạng khách đã duyệt. Mục template không có (deploy method, đánh giá downtime, bảng quyết định rollback) thì **không nhét thêm** — chỉ nằm ở bản md.
 - Giữ nguyên chuỗi UI / tên resource gốc (tiếng Nhật, tên cluster…) ở mọi locale.
 - **[HARD]** Smoke step đọc metric lỗi phải: đo ở **target group** (không phải load balancer) nếu service dùng chung LB · đo **cả** Target 5xx **và** ELB 5xx · statistic **Sum** · đối chiếu `RequestCount > 0` · xếp **sau** step sinh traffic. Thiếu bất kỳ điều nào thì step đó không chứng minh được gì — xem mục "Smoke step đo metric".
 
@@ -325,6 +326,6 @@ release-note <from-ref>..<to-ref> | "release lần này"  [format=md|xlsx|pdf|do
 release-note convert <file.md> format=xlsx
   Điền bản md sẵn có vào template công ty (Bước 7.1).
   - md → JSON (model rút) → scripts/fill_release_xlsx.py → xlsx, giữ nguyên merge/style.
-  - BẮT BUỘC hỏi nếu thiếu: PIC · domain môi trường · 日時 JST · số PR.
+  - BẮT BUỘC hỏi nếu thiếu: PIC · domain môi trường · 日時 JST · số PR · số version (vd v1.2.0).
   KHÔNG phải stage của pipeline per-task — gọi riêng lúc chuẩn bị deploy.
 ```

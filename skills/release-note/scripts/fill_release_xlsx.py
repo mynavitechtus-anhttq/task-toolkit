@@ -5,8 +5,9 @@
         [--template /path/to/template.xlsx] [--sheet-title 20260930-TICKET]
 
 Vào: JSON đúng content model của SKILL.md. Ra: bản sao template đã điền.
-Script KHÔNG dựng lại layout — nó copy template rồi ghi theo dòng, vì template có
-merged cell; dựng lại là mất định dạng công ty đã duyệt.
+Script KHÔNG dựng lại layout và KHÔNG chèn/xoá dòng — nó copy template rồi ghi vào
+đúng số slot có sẵn, vì template có merged cell, border và dropdown theo vùng cố định;
+chèn/xoá dòng là lệch cả ba. Nội dung nhiều hơn slot → script báo, người gom lại.
 
 Neo theo CHỮ trong cột A (`DEPLOYMENT PREPARATION`, `ENGINEER DEPLOYMENT STEPS`,
 `SMOKE TEST`, `ROLLBACK`), không hardcode số dòng — template đổi bố cục vẫn chạy.
@@ -35,7 +36,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from copy import copy
+from copy import copy  # autofit_rows
 from pathlib import Path
 
 try:
@@ -86,59 +87,20 @@ def section_bounds(ws):
     return out
 
 
-def shift_merges(ws, at_row, count):
-    """openpyxl không tự dời merged cell khi insert_rows — dời tay.
-
-    Không dùng unmerge_cells(): nó xoá thẳng trong ws._cells và ném KeyError khi
-    ô đã bị insert_rows dịch đi. Cách chắc hơn: gỡ toàn bộ metadata merge, dọn
-    các MergedCell mồ côi, rồi merge lại ở vị trí mới.
-    """
-    old = [(rng.min_row, rng.min_col, rng.max_row, rng.max_col) for rng in ws.merged_cells.ranges]
-    ws.merged_cells.ranges = []
-    for r0, c0, r1, c1 in old:  # MergedCell là read-only, phải dọn khỏi _cells
-        for r in range(r0, r1 + 1):
-            for c in range(c0, c1 + 1):
-                if (r, c) != (r0, c0):
-                    ws._cells.pop((r, c), None)
-    for r0, c0, r1, c1 in old:
-        shift = count if r0 >= at_row else 0
-        ws.merge_cells(start_row=r0 + shift, start_column=c0,
-                       end_row=r1 + shift, end_column=c1)
-
-
-def fit_rows(ws, first, last, needed):
-    """Khớp số dòng của khối với số bước: thiếu thì chèn, thừa thì xoá.
-
-    Trả về độ lệch dòng (dương = đã chèn, âm = đã xoá) để khối bên dưới dời theo.
-    Xoá dòng thừa là cần thiết: dòng rỗng vẫn mang viền của bảng, để lại thì
-    bảng trông như còn kéo dài xuống dưới.
-    """
+def check_fits(key, needed, first, last):
+    """Template là bố cục khách đã duyệt: KHÔNG chèn/xoá dòng (border, merge, dropdown
+    sẽ lệch). Nội dung vượt số slot thì gom lại cho vừa, script chỉ báo."""
     have = last - first + 1
-    if needed == have:
-        return 0
-
     if needed > have:
-        extra = needed - have
-        at = last + 1
-        ws.insert_rows(at, extra)
-        shift_merges(ws, at, extra)
-        for r in range(at, at + extra):
-            ws.row_dimensions[r].height = ws.row_dimensions[first].height
-            for col in "ABCDEF":
-                ws[f"{col}{r}"]._style = copy(ws[f"{col}{first}"]._style)
-        return extra
-
-    gone = have - needed
-    at = first + needed
-    ws.delete_rows(at, gone)
-    shift_merges(ws, at, -gone)
-    return -gone
+        sys.exit(f"khối '{key}' có {needed} mục nhưng template chỉ có {have} dòng "
+                 f"(dòng {first}-{last}) — gom nội dung lại cho vừa, không chèn dòng")
 
 
 def write_steps(ws, key, rows, first, last):
     if not rows:  # khối không có bước nào -> giữ nguyên, để người điền tay
         return 0
-    shift = fit_rows(ws, first, last, len(rows))
+    check_fits(key, len(rows), first, last)
+    shift = 0
     for i, step in enumerate(rows):
         r = first + i
         ws[f"A{r}"] = step.get("no", i + 1)
@@ -148,11 +110,34 @@ def write_steps(ws, key, rows, first, last):
     return shift
 
 
-def trim_trailing(ws):
-    """Xoá các dòng cuối không có dữ liệu. Chúng vẫn mang viền nên trông như bảng còn tiếp."""
-    last = max((c.row for row in ws.iter_rows() for c in row if c.value not in (None, "")), default=0)
-    if last and ws.max_row > last:
-        ws.delete_rows(last + 1, ws.max_row - last)
+LINE_PT = 15  # chiều cao ước lượng của một dòng chữ (pt)
+MAX_ROW_PT = 409  # giới hạn của Excel
+
+
+def autofit_rows(ws, rows):
+    """Bật wrap và ước lượng chiều cao theo số dòng chữ. Template khoá customHeight
+    nên Excel không tự giãn; không làm bước này thì ô dài bị cắt."""
+    import math
+    from openpyxl.styles import Alignment
+    widths = {}
+    for rng in ws.merged_cells.ranges:  # ô merge dùng tổng độ rộng các cột gộp
+        widths[(rng.min_row, rng.min_col)] = sum(
+            ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width or 8
+            for c in range(rng.min_col, rng.max_col + 1))
+    for r in rows:
+        lines = 1
+        for c in ws[r]:
+            if c.column == 1 or c.value in (None, "") or not isinstance(c.value, str):
+                continue  # cột A là nhãn/số thứ tự, chữ tràn sang phải — không wrap
+            al = copy(c.alignment); al.wrap_text = True; al.vertical = al.vertical or "top"
+            c.alignment = al
+            w = widths.get((r, c.column)) or ws.column_dimensions[c.column_letter].width or 8
+            n = 0
+            for line in c.value.split("\n"):
+                units = sum(1.8 if ord(ch) > 0x2E7F else 1 for ch in line)  # CJK rộng gần gấp đôi
+                n += max(1, math.ceil(units / max(w - 1, 1)))
+            lines = max(lines, n)
+        ws.row_dimensions[r].height = min(MAX_ROW_PT, max(ws.row_dimensions[r].height or 0, lines * LINE_PT))
 
 
 def main():
@@ -181,14 +166,17 @@ def main():
         ws["C4"] = d["env_url"]
     env = (d.get("environment") or "").upper()
     if env:
-        ws["A4"] = (f"{'本番' if env.startswith('PROD') else env}環境の情報：\n"
+        ws["A4"] = (f"{env}環境の情報：\n"
                     f"{env} Environment Information:")
 
     # --- KNOWN ISSUES -----------------------------------------------------
     ki_header = find_row(ws, "KNOWN ISSUES AND LIMITATIONS")
-    if ki_header:
+    issues = data.get("known_issues", [])
+    if ki_header and issues:
         first = ki_header + 2  # tiêu đề khối + dòng tiêu đề cột
-        for i, issue in enumerate(data.get("known_issues", [])):
+        last = find_row(ws, "RELEASE TARGET", start=first) - 1
+        check_fits("known_issues", len(issues), first, last)
+        for i, issue in enumerate(issues):
             r = first + i
             ws[f"A{r}"] = issue.get("no", i + 1)
             ws[f"B{r}"] = issue.get("detail", "")
@@ -228,7 +216,13 @@ def main():
         last += shift
         shift += write_steps(ws, key, steps.get(key, []), first, last)
 
-    trim_trailing(ws)
+    # bỏ qua dòng tiêu đề khối (chỉ có cột A, chữ tràn sang phải) và dòng tiêu đề cột "NO."
+    def is_data_row(r):
+        a = ws.cell(r, 1).value
+        if isinstance(a, str) and a.strip().upper() == "NO.":
+            return False
+        return any(ws.cell(r, c).value not in (None, "") for c in range(2, ws.max_column + 1))
+    autofit_rows(ws, [r for r in range(1, ws.max_row + 1) if is_data_row(r)])
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     wb.save(args.out)
