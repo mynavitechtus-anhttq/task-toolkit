@@ -9,7 +9,7 @@
 
 | 項目 / Item | 内容 / Value |
 |---|---|
-| 日時（日本時間）/ Date and Time (JST) | `HH:MM – HH:MM JST YYYY/MM/DD` |
+| 日時（日本時間）/ Date and Time (JST) | `HH:MM – HH:MM JST YYYY-MM-DD` — ngày viết **Y-m-d** |
 | バーション / Version | `WEB: vX.Y.Z` — **hỏi người phụ trách, không suy từ git** |
 | {ENV}環境の情報 / {ENV} Environment Information | `https://…/` |
 

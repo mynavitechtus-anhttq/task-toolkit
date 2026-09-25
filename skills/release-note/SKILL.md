@@ -206,7 +206,7 @@ Cột này **không được viết 1 câu chung chung**. Phải là **checklist
 
 **Năm câu BẮT BUỘC hỏi** (không được đoán — chúng đổi cả nội dung runbook):
 
-1. **日時 (JST) / Date & Time** — thời điểm release theo giờ Nhật.
+1. **日時 (JST) / Date & Time** — thời điểm release theo giờ Nhật. Ghi dạng `HH:MM – HH:MM JST YYYY-MM-DD` (ngày **Y-m-d**, không dùng `/`).
 2. **環境 / Environment** — **STG hay PRODUCTION**. Quyết định URL, mức thận trọng, có cần backup/maintenance không.
 3. **デプロイ方法 / Deploy method** — CI/CD (GitHub Actions…) · AWS CLI / CDK deploy · FTP · thao tác tay trên Console · khác. **Đây là thứ định hình toàn bộ bảng deployment steps** (xem Bước 5).
 4. **バージョン / Version** — số version ghi vào ô `バーション` (vd `WEB: v1.0.0`). Người đánh số; **không suy từ branch/commit/PR**.

@@ -15,7 +15,7 @@ Neo theo CHỮ trong cột A (`DEPLOYMENT PREPARATION`, `ENGINEER DEPLOYMENT STE
 JSON tối thiểu:
 {
   "sheet_title": "(tuỳ chọn — mặc định tự dựng: Ymd-デジ戦's PROD-x.y.z từ delivery)",
-  "delivery": {"datetime_jst": "15:30 – 18:30 JST 2026/09/30",
+  "delivery": {"datetime_jst": "15:30 – 18:30 JST 2026-09-30",
                "version": "WEB: v1.0.0",
                "environment": "PRODUCTION",
                "env_url": "https://example.jp/"},
@@ -63,9 +63,10 @@ SHEET_TEAM = "デジ戦"  # quy ước công ty: Ymd-デジ戦's STAGING-x.y.z /
 
 def default_sheet_title(d):
     """Dựng tên sheet theo quy ước từ delivery: ngày (YYYY/MM/DD trong datetime_jst),
-    môi trường (STG*/STAGING -> STAGING, còn lại -> PROD), version (bỏ tiền tố 'WEB: v')."""
+    môi trường (STG*/STAGING -> STAGING, còn lại -> PROD), version (bỏ tiền tố 'WEB: v').
+    Ngày trong datetime_jst viết Y-m-d (vd '12:00 – 14:00 JST 2026-09-25')."""
     import re
-    m = re.search(r"(\d{4})/(\d{2})/(\d{2})", d.get("datetime_jst", ""))
+    m = re.search(r"(\d{4})-(\d{2})-(\d{2})", d.get("datetime_jst", ""))
     env = (d.get("environment") or "").upper()
     ver = re.sub(r"^[A-Za-z]+:\s*v?", "", d.get("version", "")).strip()
     if not (m and env and ver):
