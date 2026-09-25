@@ -291,6 +291,7 @@ python3 scripts/fill_release_xlsx.py --data release.json --out "[Proj][PROD] Rel
 | Neo vị trí | theo **chữ** trong cột A (`DEPLOYMENT PREPARATION`, `ENGINEER DEPLOYMENT STEPS`, `SMOKE TEST`, `ROLLBACK`), không theo số dòng — template đổi bố cục vẫn chạy |
 | Thiếu chỗ | **không chèn dòng.** Nội dung nhiều hơn slot → script báo lỗi, gom bước lại cho vừa (ví dụ gộp hai bước cùng chỗ chạy). Template là bố cục khách đã duyệt: chèn/xoá dòng làm lệch border, merge và vùng dropdown |
 | Cột matrix | `fe be aws email sms migration batch cache` → tick `✓`; khoá nào không có thì để trống |
+| Màu ステータス | template có sẵn conditional formatting trên vùng dropdown Status: `Open` xám · `In Progress` vàng · `Done` xanh lá · `No Need` xanh nhạt. Script không đụng; đổi màu thì sửa trong template |
 
 Schema JSON nằm ở docstring đầu script. Ô nào không truyền thì **giữ nguyên nội dung template**, nên convert lại nhiều lần không làm mất nhãn song ngữ.
 
