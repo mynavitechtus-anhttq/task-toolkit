@@ -10,8 +10,9 @@ description: >-
   assessment, then drafts deployment / smoke-test / rollback steps from those signals. Always asks three
   things it must not guess — date & time (JST), environment (STG or PRODUCTION), and deploy method
   (CI/CD, AWS CLI/CDK, FTP, manual console) — plus version, PIC and UAT status, all in one round. Output
-  is BILINGUAL EN/JA (labels and content). Renders md (source of truth) + xlsx (fills the company
-  template) + pdf/docx. Runs as its OWN process at deploy-prep time — NOT a stage of the per-task
+  is BILINGUAL EN/JA (labels and content). First asks which format to deliver — xlsx (default, fills
+  the company template), md (same blocks as the xlsx, from assets/release-note-template.md), docs
+  (template pending) or pdf. Runs as its OWN process at deploy-prep time — NOT a stage of the per-task
   pipeline. Trigger on "viết release note", "release note cho lần release này", "làm runbook deploy",
   "リリースノート作成".
 ---
@@ -201,13 +202,16 @@ Cột này **không được viết 1 câu chung chung**. Phải là **checklist
 
 ## Bước 6 — Hỏi phần code không trả lời được (gộp 1 lượt)
 
-**Ba câu BẮT BUỘC hỏi** (không được đoán — chúng đổi cả nội dung runbook):
+**Câu đầu tiên: format muốn nhận** — `xlsx` (**mặc định**, điền template công ty) · `md` (cùng khối với xlsx) · `docs` (Google Docs — template chưa có, xem Bước 7) · `pdf`. User không nói → xlsx. Chọn xlsx/pdf thì vẫn viết md trước (nguồn chân lý), rồi render.
+
+**Bốn câu BẮT BUỘC hỏi** (không được đoán — chúng đổi cả nội dung runbook):
 
 1. **日時 (JST) / Date & Time** — thời điểm release theo giờ Nhật.
 2. **環境 / Environment** — **STG hay PRODUCTION**. Quyết định URL, mức thận trọng, có cần backup/maintenance không.
 3. **デプロイ方法 / Deploy method** — CI/CD (GitHub Actions…) · AWS CLI / CDK deploy · FTP · thao tác tay trên Console · khác. **Đây là thứ định hình toàn bộ bảng deployment steps** (xem Bước 5).
+4. **バージョン / Version** — số version ghi vào ô `バーション` (vd `WEB: v1.0.0`). Người đánh số; **không suy từ branch/commit/PR**.
 
-Hỏi thêm trong cùng lượt (nếu adapter chưa có): バージョン · URL môi trường · 担当者 PIC · ステータス · UAT (テクタス側 / 顧客様側) · known issues mang tính phán đoán · bước vận hành đặc thù (thao tác AWS Console…).
+Hỏi thêm trong cùng lượt (nếu adapter chưa có): URL môi trường · 担当者 PIC · ステータス · UAT (テクタス側 / 顧客様側) · known issues mang tính phán đoán · bước vận hành đặc thù (thao tác AWS Console…).
 
 Hỏi **một lần duy nhất**, gộp tất cả — không hỏi nhỏ giọt.
 
@@ -227,9 +231,16 @@ steps         : prep[] · deployment[] · smoke[] · rollback[]
 
 ## Bước 7 — Render (nội dung như nhau, layout khác nhau)
 
-| Format | Layout | Cách |
+**md luôn viết trước** — là nguồn chân lý, và các format khác render từ nó. md dùng đúng `assets/release-note-template.md`: **mirror 1:1 các khối của template Excel** (cùng tên khối song ngữ, cùng cột, cùng thứ tự: DELIVERY → KNOWN ISSUES → RELEASE TARGET → RELEASE NOTES + 影響箇所マトリックス + UAT → DEPLOYMENT PREPARATION → ENGINEER DEPLOYMENT STEPS → SMOKE TEST → ROLLBACK). Excel có gì thì md có nấy — **không thêm mục Excel không có** (deploy method, đánh giá downtime, bảng quyết định rollback… nếu cần thì đưa vào 備考 của bước liên quan). Số dòng mỗi khối = số slot Excel (ghi trong comment của template).
+
+| Format | Khi nào | Cách |
 |---|---|---|
-| **md** | **Nguồn chân lý** — heading mỗi khối, matrix là bảng tick ✓, steps là bảng | viết trực tiếp; lưu `tasks/release-<yyyymmdd>.md` hoặc chỗ user chỉ định |
+| **xlsx** | **Mặc định.** Bản gửi khách | `scripts/fill_release_xlsx.py` — copy `TEMPLATE_XLSX` rồi ghi vào slot có sẵn, **KHÔNG dựng lại layout, KHÔNG chèn/xoá dòng**. Xem Bước 7.1 |
+| **md** | User yêu cầu, hoặc để review nội bộ trước khi render | viết theo `assets/release-note-template.md`; lưu `tasks/release-<yyyymmdd>.md` hoặc chỗ user chỉ định |
+| **docs** | User yêu cầu | **Template Google Docs chưa có.** Hỏi user gửi template (file .docx hoặc link Docs); chưa có thì báo rõ và đề nghị xlsx/md thay thế, **không tự dựng layout** |
+| **pdf** | User yêu cầu | từ md: `pandoc release.md -o release.pdf --pdf-engine=typst -V mainfont=...` (JA → thêm font CJK). Landscape vì matrix rộng |
+
+Nhãn khối giữ song ngữ JA/EN như template ở mọi format.
 
 ### Hai tầng release note — đừng lẫn
 
@@ -241,11 +252,6 @@ steps         : prep[] · deployment[] · smoke[] · rollback[]
 Tầng task ghi đúng 4 thứ: *đổi gì (1–3 câu cho người không đọc code)* · *vùng bị ảnh hưởng* · *cần thao tác gì khi deploy (migration, biến môi trường, clear cache…)* · *lùi thế nào*. Chưa deploy thì để nguyên placeholder **"Chưa triển khai release"**.
 
 Bước 3 (enrich) **đọc tầng task trước**, chỉ fallback sang PR body khi ticket không đi qua toolkit. Đây là nguồn chính xác hơn PR title vì nó do người làm viết lúc còn nhớ, không phải suy ngược từ diff.
-| **xlsx** | Đúng template công ty | `scripts/fill_release_xlsx.py` — copy `TEMPLATE_XLSX` rồi ghi theo dòng, **KHÔNG dựng lại layout** (template có merged cell). Xem Bước 7.1 |
-| **pdf** | Landscape (matrix rộng) hoặc tách matrix ra bảng riêng | `pandoc release.md -o release.pdf --pdf-engine=typst -V mainfont=... ` (JA → thêm font CJK) |
-| **docx** | Dọc; matrix tách bảng riêng nếu tràn | `pandoc release.md -o release.docx` |
-
-Mặc định xuất **md**; format khác chỉ khi user yêu cầu. Nhãn khối giữ song ngữ JA/EN như template.
 
 ## Bước 7.1 — md → xlsx (điền template công ty)
 
@@ -314,14 +320,15 @@ Mở file và kiểm ba thứ, vì đây là bản gửi khách:
 ## Help
 
 ```
-release-note <from-ref>..<to-ref> | "release lần này"  [format=md|xlsx|pdf|docx]
+release-note <from-ref>..<to-ref> | "release lần này"  [format=xlsx|md|docs|pdf]  (mặc định xlsx)
   Release note + deployment runbook cho MỘT LẦN RELEASE (N ticket). Output SONG NGỮ EN/JA.
   - Phạm vi: git log/PR range (BẮT BUỘC chốt trước).
   - Enrich từ tasks/{ID}/ (backlog.md, impact.md, report) — không có thì fallback PR/diff + đánh dấu.
   - Auto: 影響箇所マトリックス từ path diff + đánh giá downtime/điều phối + nháp steps.
-  - Hỏi 1 lượt, BẮT BUỘC 3 câu: 日時 JST · 環境 (STG/PROD) · デプロイ方法 (CI/CD | CDK | FTP | tay).
-    Kèm: version, PIC, UAT, ステータス.
-  - Output: md (chuẩn) · xlsx (điền template công ty) · pdf/docx (pandoc).
+  - Hỏi 1 lượt: format (xlsx mặc định | md | docs | pdf) + BẮT BUỘC 4 câu: 日時 JST · 環境 (STG/PROD)
+    · デプロイ方法 (CI/CD | CDK | FTP | tay) · バージョン (vd WEB: v1.0.0). Kèm: PIC, UAT, ステータス.
+  - md viết trước theo assets/release-note-template.md (khối = khối Excel), rồi render:
+    xlsx (điền template công ty) · docs (chờ template) · pdf (pandoc).
 
 release-note convert <file.md> format=xlsx
   Điền bản md sẵn có vào template công ty (Bước 7.1).
