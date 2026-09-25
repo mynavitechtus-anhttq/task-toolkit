@@ -204,14 +204,15 @@ Cột này **không được viết 1 câu chung chung**. Phải là **checklist
 
 **Câu đầu tiên: format muốn nhận** — `xlsx` (**mặc định**, điền template công ty) · `md` (cùng khối với xlsx) · `docs` (Google Docs — template chưa có, xem Bước 7) · `pdf`. User không nói → xlsx. Chọn xlsx/pdf thì vẫn viết md trước (nguồn chân lý), rồi render.
 
-**Bốn câu BẮT BUỘC hỏi** (không được đoán — chúng đổi cả nội dung runbook):
+**Năm câu BẮT BUỘC hỏi** (không được đoán — chúng đổi cả nội dung runbook):
 
 1. **日時 (JST) / Date & Time** — thời điểm release theo giờ Nhật.
 2. **環境 / Environment** — **STG hay PRODUCTION**. Quyết định URL, mức thận trọng, có cần backup/maintenance không.
 3. **デプロイ方法 / Deploy method** — CI/CD (GitHub Actions…) · AWS CLI / CDK deploy · FTP · thao tác tay trên Console · khác. **Đây là thứ định hình toàn bộ bảng deployment steps** (xem Bước 5).
 4. **バージョン / Version** — số version ghi vào ô `バーション` (vd `WEB: v1.0.0`). Người đánh số; **không suy từ branch/commit/PR**.
+5. **問題・ペンディングタスク / Known issues** — **dừng lại hỏi: release này có known issue không?** Có thì người đọc nội dung từng mục; không thì ghi đúng một dòng `現時点で確認されている問題はありません。/ No known issues at this time.` AI có thể **gợi ý ứng viên** rút từ md/PR (rủi ro vận hành, việc hoãn) nhưng **không tự điền** — cái gì là known issue với khách là phán đoán của người phụ trách.
 
-Hỏi thêm trong cùng lượt (nếu adapter chưa có): URL môi trường · 担当者 PIC · ステータス · UAT (テクタス側 / 顧客様側) · known issues mang tính phán đoán · bước vận hành đặc thù (thao tác AWS Console…).
+Hỏi thêm trong cùng lượt (nếu adapter chưa có): URL môi trường · 担当者 PIC · ステータス · UAT (テクタス側 / 顧客様側) · bước vận hành đặc thù (thao tác AWS Console…).
 
 Hỏi **một lần duy nhất**, gộp tất cả — không hỏi nhỏ giọt.
 
@@ -263,7 +264,7 @@ Dùng khi đã có bản md (của skill này, hoặc người viết tay) và c
 md  ──(model rút nội dung)──►  release.json  ──(script)──►  xlsx theo template
 ```
 
-### 7.1.1 — Năm thứ BẮT BUỘC hỏi trước khi convert
+### 7.1.1 — Sáu thứ BẮT BUỘC hỏi trước khi convert
 
 Bản md thường thiếu đúng những thứ chỉ người mới biết. Thiếu bất kỳ cái nào → **hỏi, không suy, không để trống cho xong**:
 
@@ -274,6 +275,7 @@ Bản md thường thiếu đúng những thứ chỉ người mới biết. Thi
 | 日時 (JST) | ngày giờ release theo giờ Nhật | Quyết định cả lịch điều phối lẫn thời hạn của các đường lùi |
 | PR | số PR và nhánh đích | Không có số PR thì bước merge và bước revert đều không thực thi được |
 | バージョン / Version | số version sẽ ghi vào ô `バーション` (vd `WEB: v1.0.0`, `v1.2.0`) | Số version là do người quản lý release đánh, **không suy được** từ git/PR/md. Không được tự chế dạng `master ← staging (PR #…)` |
+| 問題・ペンディングタスク / Known issues | release này có known issue không, nội dung từng mục | md hay ghi rủi ro vận hành, ghi chú kỹ thuật — **không phải cái nào cũng là known issue với khách**. Người quyết; không có thì ghi `No known issues at this time` |
 
 Hỏi **gộp một lượt** cùng các câu ở Bước 6. Người dùng trả lời "để trống" thì ghi placeholder nhìn ra được ngay (`<PR>`, `TBD JST YYYY/MM/DD`) — đừng để ô rỗng, người đọc sẽ tưởng là không cần.
 
@@ -312,8 +314,8 @@ Mở file và kiểm ba thứ, vì đây là bản gửi khách:
 - Mục suy từ PR/diff (không có artifact) phải **đánh dấu**, không trộn với mục đã verify.
 - Không bịa bước vận hành (thao tác console, tên resource) — không biết thì để trống + hỏi.
 - Cột matrix không có path khớp → để trống, không tick cho "đủ bảng".
-- Không tự điền PIC / UAT / ステータス — đó là cam kết của người, không phải suy luận.
-- **[HARD]** Convert md → xlsx mà thiếu PIC · domain môi trường · ngày giờ JST · số PR · **số version** thì **hỏi trước**, không tự suy (Bước 7.1.1). Version tự chế từ branch/commit là sai — người đánh số, không phải AI.
+- Không tự điền PIC / UAT / ステータス / **known issues** — đó là cam kết và phán đoán của người, không phải suy luận.
+- **[HARD]** Convert md → xlsx mà thiếu PIC · domain môi trường · ngày giờ JST · số PR · **số version** · **known issues** thì **hỏi trước**, không tự suy (Bước 7.1.1). Version tự chế từ branch/commit là sai — người đánh số, không phải AI. Known issues tự rút từ md/PR rồi điền là sai — AI chỉ gợi ý ứng viên, người chọn.
 - **[HARD]** Không dựng lại layout xlsx bằng code, **không chèn/xoá dòng**, không thêm merge. Luôn copy template rồi ghi vào slot có sẵn — template có merged cell, border và dropdown theo vùng cố định; dựng lại hay chèn dòng là lệch định dạng khách đã duyệt. Mục template không có (deploy method, đánh giá downtime, bảng quyết định rollback) thì **không nhét thêm** — chỉ nằm ở bản md.
 - Giữ nguyên chuỗi UI / tên resource gốc (tiếng Nhật, tên cluster…) ở mọi locale.
 - **[HARD]** Smoke step đọc metric lỗi phải: đo ở **target group** (không phải load balancer) nếu service dùng chung LB · đo **cả** Target 5xx **và** ELB 5xx · statistic **Sum** · đối chiếu `RequestCount > 0` · xếp **sau** step sinh traffic. Thiếu bất kỳ điều nào thì step đó không chứng minh được gì — xem mục "Smoke step đo metric".
@@ -327,13 +329,14 @@ release-note <from-ref>..<to-ref> | "release lần này"  [format=xlsx|md|docs|p
   - Enrich từ tasks/{ID}/ (backlog.md, impact.md, report) — không có thì fallback PR/diff + đánh dấu.
   - Auto: 影響箇所マトリックス từ path diff + đánh giá downtime/điều phối + nháp steps.
   - Hỏi 1 lượt: format (xlsx mặc định | md | docs | pdf) + BẮT BUỘC 4 câu: 日時 JST · 環境 (STG/PROD)
-    · デプロイ方法 (CI/CD | CDK | FTP | tay) · バージョン (vd WEB: v1.0.0). Kèm: PIC, UAT, ステータス.
+    · デプロイ方法 (CI/CD | CDK | FTP | tay) · バージョン (vd WEB: v1.0.0) · known issues (có/không, nội dung).
+    Kèm: PIC, UAT, ステータス.
   - md viết trước theo assets/release-note-template.md (khối = khối Excel), rồi render:
     xlsx (điền template công ty) · docs (chờ template) · pdf (pandoc).
 
 release-note convert <file.md> format=xlsx
   Điền bản md sẵn có vào template công ty (Bước 7.1).
   - md → JSON (model rút) → scripts/fill_release_xlsx.py → xlsx, giữ nguyên merge/style.
-  - BẮT BUỘC hỏi nếu thiếu: PIC · domain môi trường · 日時 JST · số PR · số version (vd v1.2.0).
+  - BẮT BUỘC hỏi nếu thiếu: PIC · domain môi trường · 日時 JST · số PR · số version (vd v1.2.0) · known issues.
   KHÔNG phải stage của pipeline per-task — gọi riêng lúc chuẩn bị deploy.
 ```

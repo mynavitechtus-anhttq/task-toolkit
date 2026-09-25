@@ -17,7 +17,7 @@
 
 ## 2. 問題・ペンディングタスク・KNOWN ISSUES AND LIMITATIONS
 
-<!-- Excel: 3 slot. Không có thì ghi đúng 1 dòng: 現時点で確認されている問題はありません。/ No known issues at this time. -->
+<!-- Excel: 3 slot. HỎI người phụ trách có known issue không rồi mới điền — không tự rút từ md/PR. Không có thì ghi đúng 1 dòng: 現時点で確認されている問題はありません。/ No known issues at this time. -->
 
 | NO. | 詳細 / DETAIL | 備考 / NOTE |
 |---|---|---|
