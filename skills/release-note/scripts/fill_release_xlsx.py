@@ -14,7 +14,7 @@ Neo theo CHỮ trong cột A (`DEPLOYMENT PREPARATION`, `ENGINEER DEPLOYMENT STE
 
 JSON tối thiểu:
 {
-  "sheet_title": "20260930-MAG_UNEI-14532",
+  "sheet_title": "(tuỳ chọn — mặc định tự dựng: Ymd-デジ戦's PROD-x.y.z từ delivery)",
   "delivery": {"datetime_jst": "15:30 – 18:30 JST 2026/09/30",
                "version": "WEB: v1.0.0",
                "environment": "PRODUCTION",
@@ -56,6 +56,22 @@ SECTIONS = [
 MATRIX_COLS = {"fe": "G", "be": "H", "aws": "I", "email": "J", "sms": "K",
                "migration": "L", "batch": "M", "cache": "N"}
 STEP_COLS = {"name": "B", "detail": "C", "pic": "D", "status": "E", "note": "F"}
+
+
+SHEET_TEAM = "デジ戦"  # quy ước công ty: Ymd-デジ戦's STAGING-x.y.z / Ymd-デジ戦's PROD-x.y.z
+
+
+def default_sheet_title(d):
+    """Dựng tên sheet theo quy ước từ delivery: ngày (YYYY/MM/DD trong datetime_jst),
+    môi trường (STG*/STAGING -> STAGING, còn lại -> PROD), version (bỏ tiền tố 'WEB: v')."""
+    import re
+    m = re.search(r"(\d{4})/(\d{2})/(\d{2})", d.get("datetime_jst", ""))
+    env = (d.get("environment") or "").upper()
+    ver = re.sub(r"^[A-Za-z]+:\s*v?", "", d.get("version", "")).strip()
+    if not (m and env and ver):
+        return None  # thiếu dữ kiện thì giữ tên sheet của template
+    env_label = "STAGING" if env.startswith("ST") else "PROD"
+    return f"{''.join(m.groups())}-{d.get('sheet_team', SHEET_TEAM)}'s {env_label}-{ver}"
 
 
 def find_row(ws, *needles, start=1):
@@ -152,7 +168,7 @@ def main():
     wb = openpyxl.load_workbook(args.template)
     ws = wb.active
 
-    title = args.sheet_title or data.get("sheet_title")
+    title = args.sheet_title or data.get("sheet_title") or default_sheet_title(data.get("delivery", {}))
     if title:
         ws.title = title[:31]
 

@@ -283,13 +283,14 @@ Hỏi **gộp một lượt** cùng các câu ở Bước 6. Người dùng tr�
 
 ```bash
 python3 scripts/fill_release_xlsx.py --data release.json --out "[Proj][PROD] Release notes.xlsx" \
-    [--template .claude/release-note-template.xlsx] [--sheet-title 20260930-TICKET]
+    [--template .claude/release-note-template.xlsx] [--sheet-title "20260930-デジ戦's PROD-1.2.0"]
 ```
 
 | | |
 |---|---|
 | Template mặc định | `assets/release-note-template.xlsx` — layout công ty, đã xoá sạch nội dung mẫu |
 | Ghi đè | `--template` khi repo có bản riêng (`.claude/release-note-template.xlsx`) |
+| Tên sheet | tự dựng theo quy ước `Ymd-デジ戦's STAGING-x.y.z` / `Ymd-デジ戦's PROD-x.y.z` từ ngày, môi trường và version trong `delivery` (vd `20260925-デジ戦's PROD-1.0.0`). Ghi đè bằng `--sheet-title` hoặc `sheet_title` trong JSON |
 | Neo vị trí | theo **chữ** trong cột A (`DEPLOYMENT PREPARATION`, `ENGINEER DEPLOYMENT STEPS`, `SMOKE TEST`, `ROLLBACK`), không theo số dòng — template đổi bố cục vẫn chạy |
 | Thiếu chỗ | **không chèn dòng.** Nội dung nhiều hơn slot → script báo lỗi, gom bước lại cho vừa (ví dụ gộp hai bước cùng chỗ chạy). Template là bố cục khách đã duyệt: chèn/xoá dòng làm lệch border, merge và vùng dropdown |
 | Cột matrix | `fe be aws email sms migration batch cache` → tick `✓`; khoá nào không có thì để trống |
