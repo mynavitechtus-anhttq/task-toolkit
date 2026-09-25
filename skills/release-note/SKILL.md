@@ -143,6 +143,17 @@ Từ matrix + diff, suy ra **đánh giá deploy** rồi seed các bảng steps (
 | Batch | ghi chú ảnh hưởng lịch chạy; có cần dừng batch khi deploy không |
 | Nhiều repo cùng release | **cảnh báo điều phối**: thứ tự deploy, và repo nào nên hoãn release trong thời gian soak |
 
+### Khối DEPLOYMENT PREPARATION — hai dòng cố định, phần còn lại nháp rồi hỏi
+
+Hai dòng đầu **luôn có**, đúng chữ này (đổi `STAGING`/`本番` theo môi trường); ステータス do người chốt (`No Need` khi không có migration/đổi schema, `Open` khi cần):
+
+| NO. | 項目 / Name | 作業詳細 / Task Detail |
+|---|---|---|
+| 1 | リプレイス側本番をメンテナンス画面にする<br>ーーーー<br>Set Maintain Mode for new site | |
+| 2 | RDSバックアップ<br>ーーーー<br>Backup RDS | Back Up the Current Database of the New {STAGING\|PRODUCTION} Environment<br>ーーーー<br>新しい{ステージング\|本番}環境のCMSデータベースのバックアップを取得すること。 |
+
+Từ dòng 3: AI **nháp** từ tín hiệu ở bảng trên (SSO/quyền, ghi lại revision đang chạy, snapshot, baseline, backup web root…), mỗi dòng ghi *vì sao có* (tín hiệu nào), rồi **hỏi ở Bước 6**: "đây là nháp phần còn lại của prep — cần bổ sung hay bỏ dòng nào không?". Không tự chốt; không hỏi trắng "cần gì không" khi chưa có nháp. Tổng ≤ 8 dòng (slot Excel).
+
 **Phương thức deploy định hình bảng deployment steps** (hỏi ở Bước 6 — đừng giả định):
 
 | Phương thức | Steps sinh ra |
@@ -212,7 +223,7 @@ Cột này **không được viết 1 câu chung chung**. Phải là **checklist
 4. **バージョン / Version** — số version ghi vào ô `バーション` (vd `WEB: v1.0.0`). Người đánh số; **không suy từ branch/commit/PR**.
 5. **問題・ペンディングタスク / Known issues** — **dừng lại hỏi: release này có known issue không?** Có thì người đọc nội dung từng mục; không thì ghi đúng một dòng `現時点で確認されている問題はありません。/ No known issues at this time.` AI có thể **gợi ý ứng viên** rút từ md/PR (rủi ro vận hành, việc hoãn) nhưng **không tự điền** — cái gì là known issue với khách là phán đoán của người phụ trách.
 
-Hỏi thêm trong cùng lượt (nếu adapter chưa có): URL môi trường · 担当者 PIC · ステータス · UAT (テクタス側 / 顧客様側) · bước vận hành đặc thù (thao tác AWS Console…).
+Hỏi thêm trong cùng lượt (nếu adapter chưa có): URL môi trường · 担当者 PIC · ステータス · UAT (テクタス側 / 顧客様側) · **nháp DEPLOYMENT PREPARATION từ dòng 3** (đưa bảng nháp kèm lý do, hỏi bổ sung/bỏ) · bước vận hành đặc thù (thao tác AWS Console…).
 
 Hỏi **một lần duy nhất**, gộp tất cả — không hỏi nhỏ giọt.
 

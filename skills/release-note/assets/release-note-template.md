@@ -58,11 +58,13 @@
 
 ## 5. DEPLOYMENT PREPARATION
 
-<!-- Excel: 8 slot. ステータス: Open · In Progress · Done · No Need. 作業詳細 theo quy tắc checklist đánh số (SKILL.md Bước 5). -->
+<!-- Excel: 8 slot. Dòng 1–2 CỐ ĐỊNH (đổi STAGING/本番 theo môi trường; ステータス người chốt). Từ dòng 3: AI nháp từ tín hiệu diff rồi hỏi bổ sung/bỏ. ステータス: Open · In Progress · Done · No Need. 作業詳細 theo quy tắc checklist đánh số (SKILL.md Bước 5). -->
 
 | NO. | 項目 / Name | 作業詳細 / Task Detail | 担当者 / PIC | ステータス / Status | 備考 / Note |
 |---|---|---|---|---|---|
-| 1 | EN<br>ーーーー<br>JA | 1. …<br>ーーーー<br>1. … | | Open | lệnh / URL |
+| 1 | リプレイス側本番をメンテナンス画面にする<br>ーーーー<br>Set Maintain Mode for new site | | | No Need | |
+| 2 | RDSバックアップ<br>ーーーー<br>Backup RDS | Back Up the Current Database of the New {ENV} Environment<br>ーーーー<br>新しい{ENV}環境のCMSデータベースのバックアップを取得すること。 | | No Need | |
+| 3 | EN<br>ーーーー<br>JA | 1. …<br>ーーーー<br>1. … | | Open | lệnh / URL |
 
 ---
 
