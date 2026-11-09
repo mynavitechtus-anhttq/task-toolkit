@@ -28,6 +28,10 @@
 ## 3. Writing-quality checklist (văn bản đạt chưa)
 
 - [ ] TL;DR đứng ĐẦU và ≤ 5 dòng — người đọc dừng ở đó vẫn hiểu đúng
+- [ ] Dòng đầu mỗi mục là câu chốt; một ý một dòng; câu ngắn
+- [ ] Cụ thể: màn hình / môi trường / con số / thời điểm / chuỗi UI nguyên văn — không còn "một số", "có vấn đề", "cần xác nhận thêm"
+- [ ] Người không có bối cảnh đọc một lượt là hình dung được (có ví dụ thật, trước → sau, hoặc bước đánh số khi ≥ 3 bước)
+- [ ] Không lặp ý giữa TL;DR / Kết luận và các mục sau; không chữ đệm ("về cơ bản", "nhìn chung", "như đã đề cập")
 - [ ] Icon tối thiểu: không emoji heading, không icon từng dòng; chỉ có dấu [Giả định] khi cần
 - [ ] Không ví von phi kỹ thuật; thuật ngữ IT giữ nguyên + giải thích ngắn trong ngoặc khi cần
 - [ ] Nguyên nhân gốc/Kết luận trình bày gạch đầu dòng, không phải đoạn văn

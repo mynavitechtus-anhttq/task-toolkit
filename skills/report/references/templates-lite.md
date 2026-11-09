@@ -9,7 +9,7 @@ Bản rút gọn, theo mẫu TechTus (`techtus/templates/report`, `techtus/templ
 - Mục **đánh số** `## 1.`, `## 2.`… để người đọc trỏ được ("xem mục 4").
 - Mục không có nội dung thì **bỏ hẳn**, không để heading rỗng, không ghi "Không có". Ngoại lệ: `Ảnh hưởng & phạm vi` luôn có dòng "KHÔNG bị ảnh hưởng".
 
-**Giữ nguyên từ bản full** (xem `templates.md`): tone theo locale, quy tắc trình bày (icon tối thiểu, gạch đầu dòng, không ví von, không tự chế thuật ngữ), quy ước evidence `[Giả định — cách verify: …]`, giữ nguyên chuỗi UI sản phẩm. Pipeline thu evidence và gate **không đổi** — lite chỉ gọn phần trình bày, không gọn phần điều tra.
+**Cách viết** theo mục *Cách viết — ngắn, đủ, đọc là hình dung được* trong `templates.md` — bản lite càng phải tuân thủ, vì không còn tầng dưới để "để dành" chi tiết. **Giữ nguyên từ bản full** (xem `templates.md`): tone theo locale, quy tắc trình bày (icon tối thiểu, gạch đầu dòng, không ví von, không tự chế thuật ngữ), quy ước evidence `[Giả định — cách verify: …]`, giữ nguyên chuỗi UI sản phẩm. Pipeline thu evidence và gate **không đổi** — lite chỉ gọn phần trình bày, không gọn phần điều tra.
 
 ## Nhãn section theo locale (lite)
 

@@ -311,6 +311,7 @@ Quy ước: đơn vị mặc định **man-day (md)**; đổi sang story point n
 
 ## Content rules (mọi section)
 
+- **Ngắn, đủ, đọc là hình dung được** — áp mục *Cách viết* trong `../report/references/templates.md`: câu chốt đứng đầu, cụ thể (màn hình, data, con số), một ý một dòng, không lặp, không chữ đệm. Người nhận ticket đọc một lượt là biết làm gì và kiểm thế nào.
 - Body theo `locale` đã chốt; heading section giữ English kể cả locale vn/ja (`Description`, `Implementation content`… là mỏ neo template).
 - Không `Co-Authored-By`, không attribution.
 - Input cụ thể ở Completion ("chọn 岩手県 ẩn header `その他の市区町村`"), không mơ hồ ("user filter được").

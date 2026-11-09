@@ -28,6 +28,29 @@ Cấu trúc không đổi giữa các ngôn ngữ — chỉ đổi nhãn. Chuỗ
 - **VN**: Viết bằng tiếng Việt, giọng văn trang trọng, ngắn gọn, dễ hiểu cho cả người đọc có kỹ thuật và không chuyên về kỹ thuật.
 - **EN**: Write in English, formal tone, short and easy to understand for both technical and non-technical readers.
 
+**Cách viết — ngắn, đủ, đọc là hình dung được (mọi template, mọi locale):**
+
+Mục tiêu: người không có bối cảnh đọc **một lượt** là hiểu chuyện gì, ở đâu, nghiêm trọng cỡ nào, ai làm gì tiếp — không phải đọc lại, không phải hỏi thêm.
+
+| Quy tắc | Viết thế này | Không viết thế này |
+|---|---|---|
+| **Câu chốt đứng đầu mỗi mục** — dòng đầu đã là kết luận của mục, các dòng sau là căn cứ | "Banner không hiện vì file JSON rỗng từ 06:00 ngày 3/11." | Mở bằng bối cảnh, kết luận nằm cuối đoạn |
+| **Cụ thể thay vì chung chung** — tên màn hình, môi trường, con số, thời điểm | "Trang chủ SP, Production, từ 10:00 ngày 3/11, ~1.200 lượt xem/giờ bị ảnh hưởng" | "Có vấn đề hiển thị ở một số trang" |
+| **Một ý một dòng**, câu ngắn (≲ 25 từ / 50 ký tự JA) | Tách "và… nên… dẫn tới…" thành nhiều dòng | Câu dài nối nhiều mệnh đề |
+| **Cho người đọc thấy** — ví dụ thật, trước → sau, chuỗi UI nguyên văn | "Nhập `abc@example` → hiện 「メールアドレスの形式が正しくありません」" | "Validation báo lỗi khi email sai" |
+| **Bảng khi so sánh / đếm được**, sơ đồ hoặc bước đánh số khi có ≥ 3 bước nối nhau | Bảng phương án; luồng 1 → 2 → 3 | Đoạn văn kể lần lượt |
+| **Thuật ngữ giải thích một lần**, lần đầu xuất hiện, trong ngoặc | "PECL (kho extension chính thức của PHP)" | Dùng viết tắt không giải thích, hoặc giải thích lại mỗi lần |
+| **Không lặp** — điều đã nói ở TL;DR / Kết luận không viết lại nguyên ý ở mục sau; mục sau chỉ thêm căn cứ | Mục sau đi vào chi tiết mới | Diễn đạt lại cùng một ý bằng câu khác |
+| **Bỏ chữ đệm, rào đón** | Nói thẳng | "Về cơ bản", "nhìn chung", "có thể nói rằng", "cần lưu ý rằng", "như đã đề cập" |
+| **Mỗi việc tiếp theo có ai + khi nào** | "Khách xác nhận maintenance window trước 15/11" | "Cần xác nhận thêm" |
+
+**Đủ nghĩa là trả lời hết câu hỏi của người đọc, không phải viết nhiều.** Trước khi giao, tự hỏi:
+
+1. Chỉ đọc TL;DR / Kết luận — có đủ để quyết định không?
+2. Người mới vào dự án đọc có **hình dung** được chuyện xảy ra ở đâu, trông như thế nào không?
+3. Xoá câu này đi thì có mất thông tin không? Không mất → xoá.
+4. Còn câu nào người đọc phải hỏi lại "cụ thể là gì / bao nhiêu / ai / khi nào" không? Còn → viết cụ thể ra.
+
 **Quy tắc trình bày (mọi template):**
 
 - **Icon tối thiểu.** Không emoji ở heading. Không gắn icon từng dòng.
