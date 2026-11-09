@@ -32,11 +32,21 @@
 - [ ] Không ví von phi kỹ thuật; thuật ngữ IT giữ nguyên + giải thích ngắn trong ngoặc khi cần
 - [ ] Nguyên nhân gốc/Kết luận trình bày gạch đầu dòng, không phải đoạn văn
 - [ ] Chuỗi 5 Whys dạng bảng (Tầng | Nguyên nhân | Evidence), không phải chuỗi hỏi-đáp
-- [ ] Tầng 1 (trên vạch `---`) không còn jargon chưa giải thích; ≤ ~1 trang
-- [ ] Chi tiết kỹ thuật nằm DƯỚI vạch, có file:line
+- [ ] *full* — Tầng 1 (trên vạch `---`) không còn jargon chưa giải thích; ≤ ~1 trang
+- [ ] *lite* — Một tầng, mục đánh số đúng template lite; mục rỗng đã bỏ (trừ dòng "KHÔNG bị ảnh hưởng"); không có mục `Chi tiết kỹ thuật` riêng — `file:line` nằm trong ô Evidence/Căn cứ
+- [ ] *full* — Chi tiết kỹ thuật nằm DƯỚI vạch, có file:line
 - [ ] Không kể chuyện điều tra theo thời gian
 - [ ] Mỗi next action có chủ ngữ + thời hạn
 - [ ] Bảng cho facts đếm được; không có đoạn văn khổng lồ
 - [ ] Chuỗi UI sản phẩm (tiếng Nhật) giữ nguyên, không dịch
 - [ ] Đúng locale + tone (JA khách = keigo); audience customer → đã qua agent `report-reviewer` + rà redact (tên người, credential, URL nội bộ → vai trò/`***`)
 - [ ] Không câu nào "cho có" — xoá được mà nghĩa không đổi thì xoá
+
+## 4. SPECS checklist (chỉ type SPECS)
+
+- [ ] Có cả hiện trạng lẫn yêu cầu — không chỉ chép yêu cầu
+- [ ] Từ 2 phương án trở lên: có bảng so sánh và lý do chọn; phương án do người phụ trách chốt, không phải AI
+- [ ] Bảng Phạm vi có cả dòng ❌ (đã kiểm, không ảnh hưởng) kèm lý do
+- [ ] Mỗi AC có mã `AC-xx`, pass / fail được, kết quả quan sát được; dạng chọn đúng bảng (checklist / Given–When–Then / bảng quyết định); 3–7 AC
+- [ ] Điều chưa chốt nằm ở Open question (có người hỏi + hạn), không viết thành AC
+- [ ] Không có bước triển khai, Definition of Ready, yêu cầu chung của DoD trong specs

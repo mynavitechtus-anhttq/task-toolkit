@@ -39,7 +39,7 @@ Muốn đi từng bước thì gọi lẻ theo thứ tự:
 /task-toolkit:task-survey TICKET-123    ← khảo sát + phạm vi ảnh hưởng
 /task-toolkit:analyze-spec <spec>       ← làm rõ yêu cầu, tìm chỗ spec mâu thuẫn code
 /task-toolkit:planning TICKET-123       ← WBS + checklist tiến độ
-/task-toolkit:backlog-ticket            ← ticket chuẩn công ty + estimate
+/task-toolkit:backlog-ticket            ← ticket task (lite mặc định / full) + estimate
 ```
 
 ### 2 · Có bug, cần tìm ra nguyên nhân
@@ -151,7 +151,7 @@ Ba thứ nó **không đoán** mà sẽ hỏi bạn một lượt: ngày giờ (
 | `ut-design` | Thiết kế quan điểm UT trước khi viết code test — duyệt 30 viewpoint A1–F10, ra case Given–When–Then. Cổng spec: `expected` phải suy từ spec, **không lấy từ code đang chạy** |
 | `debug` | Chẩn đoán tới nguyên nhân trực tiếp **đã verify** + bảng option fix kèm estimate. **Bỏ qua nếu khảo sát đã lộ nguyên nhân.** Không sửa code |
 | `planning` | Chia WBS + checklist tiến độ, tái dùng khảo sát — không điều tra lại. Kèm `wbs-schedule.md` gửi khách (quy đổi giờ→ngày, giả định lập lịch) |
-| `report` | Orchestrator: chạy đủ pipeline theo loại task rồi viết report 2 tầng |
+| `report` | Orchestrator: chạy đủ pipeline theo loại task rồi viết report — `lite` mặc định (1 tầng, mẫu TechTus), `full` 2 tầng; type BUG / INVESTIGATION / SPECS / TASK |
 | `backlog-ticket` | Ticket chuẩn công ty + estimation có căn cứ. **1 ticket = 1 file** trong `03-backlog/`, index gom theo hạng mục WBS. Rollup sang `test-checklist.md` |
 | `release-note` | Release note + runbook deploy cho cả lần release, song ngữ EN/JA |
 | `verify-claims` | Kiểm từng khẳng định trong tài liệu **có đúng sự thật không** — số lượng, tên bảng/route, phiên bản, đường dẫn, lệnh. Dùng cho report trước khi gửi khách và tài liệu mô tả hiện trạng. Không review văn phong/cấu trúc |

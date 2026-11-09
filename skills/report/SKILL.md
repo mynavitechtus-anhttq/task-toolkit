@@ -5,13 +5,17 @@ description: >-
   task/issue/bug by running a mandatory evidence pipeline — task-survey (source dig + dependency walk),
   system reverse-engineering when the architecture is unfamiliar (references/discovery-method.md), technical
   diagnosis for bugs whose cause is not yet proven (the debug skill), then 5-Whys RCA for bugs
-  (references/rca-method.md) — then gate against checklists and render a two-tier report (non-tech on top,
-  dev detail below) in VN (default) / EN / JA, with export to md/docx/pdf/xlsx. Trigger on "viết report",
+  (references/rca-method.md) — then gate against checklists and render the report in VN (default) / EN / JA:
+  LITE by default (one tier, numbered sections, TechTus templates — references/templates-lite.md) or
+  format=full for the two-tier version (non-tech on top, dev detail below — references/templates.md).
+  Types: BUG / INVESTIGATION / SPECS (clear-specs ticket content with acceptance criteria) / TASK.
+  Export to md/docx/pdf/xlsx. Trigger on "viết report",
   "báo cáo bug", "report bug/issue/task", "điều tra issue", "root cause", "tổng hợp kết quả điều tra",
   "báo cáo cho khách", "レポート作成", or when the user pastes a bug/issue/task title and asks for
   analysis + write-up. "report help" prints the skill map without running anything. Works in ANY repo —
-  project specifics discovered at runtime. Does not draft tickets or PR descriptions inline — after
-  analysis it can hand off to the backlog-ticket skill (STAGE 6: ticket + estimation). NOT for
+  project specifics discovered at runtime. Does not draft implementation tickets or PR descriptions
+  inline — SPECS is the clear-specs content only; implementation tickets are the backlog-ticket skill
+  (STAGE 6: ticket + estimation). NOT for
   test-case authoring, and NOT for inspecting a report that already exists — checking whether its claims
   are true is verify-claims, checking whether its reasoning holds is the report-reviewer agent. This
   skill writes the report; those two examine one.
@@ -22,17 +26,19 @@ description: >-
 > **Cấu trúc workspace + skill nào ghi vào đâu**: [`../_shared/workspace-layout.md`](../_shared/workspace-layout.md) — nguồn duy nhất, đừng chép lại đường dẫn.
 
 > Ngôn ngữ giao tiếp: tiếng Việt. Ngôn ngữ report theo `locale` — **hỏi user nếu lệnh không nêu**, mặc định `vn` khi user không chọn. Nhãn section + tone xem `references/templates.md`.
+>
+> **Độ dài theo `format`** — `lite` (**mặc định**, không hỏi): một tầng, mục đánh số, theo mẫu TechTus → `references/templates-lite.md`. `full`: hai tầng non-tech / dev, có `Chi tiết kỹ thuật` + `Refs` → `references/templates.md`. Chỉ khác phần trình bày — pipeline evidence, gate, review đều như nhau.
 
 > **Ai nghĩ, ai gõ** — bước *phán đoán* (nêu giả thuyết, chọn hướng, chốt kết luận, quyết định đánh đổi) là của **người phụ trách**; AI chỉ đưa *câu hỏi* hoặc *lựa chọn kèm đánh đổi* khi họ bí, không kết luận thay. Bước *thao tác* (grep, chạy lệnh verify, dựng bảng, soạn nháp theo template) AI làm, người soát từng dòng. Xem README §Nguyên tắc gốc.
 
-Viết report điều tra chuẩn: **kết luận đứng trước** (BLUF), 2 tầng độc giả (non-tech trên / dev dưới). Quy ước evidence: claim đã verify là mặc định (ghi nguồn trong ngoặc khi then chốt); claim CHƯA verify bắt buộc đánh dấu **[Giả định — cách verify: …]**. Report chỉ đáng tin bằng evidence nuôi nó — vì vậy pipeline dưới đây là **bắt buộc**, không phải tùy chọn.
+Viết report điều tra chuẩn: **kết luận đứng trước** (BLUF); bản `full` thêm 2 tầng độc giả (non-tech trên / dev dưới). Quy ước evidence: claim đã verify là mặc định (ghi nguồn trong ngoặc khi then chốt); claim CHƯA verify bắt buộc đánh dấu **[Giả định — cách verify: …]**. Report chỉ đáng tin bằng evidence nuôi nó — vì vậy pipeline dưới đây là **bắt buộc**, không phải tùy chọn.
 
 ## Help — bản đồ bộ skill
 
 > User gõ `report help` / `/task-toolkit:report ?` / "report làm được gì" → **in nguyên khối này** (không chạy gì), rồi hỏi muốn bắt đầu ở đâu.
 
 ```
-/task-toolkit:report <title|mô tả> [locale=vn|en|ja] [audience=internal|customer]
+/task-toolkit:report <title|mô tả> [locale=vn|en|ja] [audience=internal|customer] [format=lite|full]
 
 FULL LIFECYCLE (bộ task-toolkit — mỗi stage tái dùng artifact stage trước, không điều tra lại):
   task-init → [discovery] → task-survey → analyze-spec (làm rõ input, grounded)
@@ -55,15 +61,19 @@ PIPELINE (tự chạy theo type):
            BUG               [debug] chẩn đoán → Immediate Cause đã verify       [skill debug]
                              → RCA 5-Whys 3 tầng → root cause hệ thống           [rca-method.md]
            INVESTIGATION     bảng options (Được/Mất/Effort → khuyến nghị)
+           SPECS             hiện trạng/yêu cầu + phương án + impact + AC 3 dạng (từ analyze-spec)
            TASK              kết quả đo được kèm evidence
   STAGE 4  gate               3 checklist trong checklists.md — fail thì quay lại
-  STAGE 5  render + export    template theo type + locale; audience=customer →
+  STAGE 5  render + export    format=lite (mặc định, 1 tầng, templates-lite.md) | full (2 tầng,
+                              templates.md); template theo type + locale; audience=customer →
                               pass thẩm định report-reviewer + rà redact PII
 
 TYPE tự nhận diện:
   BUG            lỗi/sự cố/regression        → root cause trước    (references/templates.md §BUG)
   INVESTIGATION  câu hỏi/đề xuất/so sánh     → kết luận trước      (references/templates.md §INVESTIGATION)
+  SPECS          clear specs yêu cầu/feature → hiện trạng trước    (references/templates-lite.md §SPECS)
   TASK           tiến độ/hoàn thành          → trạng thái trước    (references/templates.md §TASK)
+  (format=lite dùng mục cùng tên trong templates-lite.md; SPECS chỉ có bản lite)
 
 GỌI LẺ TỪNG PHẦN (không cần full report):
   task-init <ID>          chỉ tạo workspace
@@ -90,6 +100,8 @@ XUẤT FILE: .md (mặc định) | .docx | .pdf | .xlsx/.csv (bảng) — xem §
 | Chỉ định thẳng 1 phần ("chỉ survey", "chỉ chạy 5 whys", "chỉ tạo workspace", "soát report này") | Làm đúng phần đó, không chạy pipeline |
 | "báo cáo tiến độ / task X xong chưa" | Type TASK — đọc thẳng workspace (plan/notes/impact), KHÔNG survey lại |
 | Có title bug/issue + muốn report | Full pipeline theo type |
+| "clear specs", "viết specs", "nội dung ticket specs", yêu cầu tính năng cần chốt làm gì / vì sao | Type **SPECS** — chạy STAGE 2 (`task-survey`) + `analyze-spec` nếu chưa có, rồi render template SPECS |
+| `format=full` / "bản đầy đủ", "2 tầng" | Render bằng `templates.md`. Không nêu → `lite`, **không hỏi** |
 | Intent chưa rõ (thiếu type/env/timeframe) | Hỏi 1 lượt duy nhất gộp mọi thứ thiếu |
 | **`locale` không được nêu** | **Hỏi**, gộp chung lượt hỏi ở trên: *"Report viết bằng ngôn ngữ nào? `vn` (mặc định) · `en` · `ja`"*. User trả lời rỗng → `vn`. Đã nêu `locale=` trong lệnh → **không hỏi lại** |
 
@@ -133,6 +145,7 @@ Xác định issue thuộc domain nào rồi thu evidence theo bảng — 1 issu
 > Cách hỏi khác nhau giữa hai bước, cố ý: `debug` gộp toàn bộ câu hỏi vào **1 lượt** (tìm sự thật kỹ thuật, cần nhanh); RCA hỏi **từng câu một** (đào bối cảnh ra quyết định, cần sâu).
 
 - **INVESTIGATION** → bảng options (Được/Mất/Effort → khuyến nghị) trên nền evidence STAGE 2. Hệ thống lạ/legacy/multi-repo thì bản đồ kiến trúc đã dựng ở STAGE 2 (`references/discovery-method.md`) — dùng lại, không đào lại.
+- **SPECS** → đọc `spec-analysis.md` (requirements Explicit/Inferred/Open, Input Contract, QA/DEC) + `technical-approach.md` (phương án, đánh đổi, rủi ro) + `impact.md`; chưa có thì chạy `analyze-spec` trước (nó grounded bởi `task-survey`). Viết AC theo bảng chọn dạng trong `templates-lite.md` §SPECS; `QA-*` chưa đóng → mục Open question, không thành AC. **Người phụ trách chốt phương án** — AI trình bảng đánh đổi, không tự chọn.
 - **TASK** → kết quả đo được kèm evidence ("deploy xanh", "N/N test pass", before→after) — không phải danh sách hoạt động.
 - **Bug cũ phát hiện giữa chừng** (pre-existing): KHÔNG lờ, KHÔNG âm thầm fix — ghi repro + evidence vào mục `Phát hiện ngoài phạm vi`, đề xuất tách ticket.
 
@@ -151,7 +164,7 @@ Quét đủ 6 nguồn, mỗi nguồn lấy đúng phần **chưa xong**:
 | `01-discovery/impact.md` | dòng impact chưa trỏ được sang lưới kiểm nào |
 | `04-quality/test-checklist.md` · `test-report.md` | mục chưa tick · case fail chưa có kết luận |
 
-Đưa thành **một mục trong report**, đặt ở tầng dưới (`Chi tiết kỹ thuật`), trừ khi có mục mức 🔴 — mục đó phải lên **tầng non-tech**:
+Đưa thành **một mục trong report**. Bản `full`: đặt ở tầng dưới (`Chi tiết kỹ thuật`), trừ khi có mục mức 🔴 — mục đó phải lên **tầng non-tech**. Bản `lite`: một mục đánh số đặt ngay trước `Phát hiện ngoài phạm vi` (SPECS: các mục này đi vào `Open question` / `Risk`, không tách mục riêng):
 
 ```markdown
 ## Còn treo
@@ -159,15 +172,15 @@ Quét đủ 6 nguồn, mỗi nguồn lấy đúng phần **chưa xong**:
 |---|---|---|---|
 ```
 
-Không có gì treo → ghi **"không còn mục nào treo"**. Đó là một kết luận, khác hẳn với bỏ trống mục này.
+Không có gì treo → ghi **"không còn mục nào treo"** (bản `lite`: một dòng cuối mục TL;DR / Kết luận, không mở mục riêng). Đó là một kết luận, khác hẳn với bỏ trống mục này.
 
 ⚠ **Không tự đóng nợ hộ.** Thấy một `⚠ Cần làm` chưa xử lý thì ghi ra, đừng viết lại thành "đã cân nhắc và chấp nhận" — chấp nhận rủi ro là quyết định của người, không phải của người viết report.
 
 ### STAGE 4 — Gate (fail → quay lại stage tương ứng)
-Chạy đủ 3 checklist trong `references/checklists.md`: điều tra đủ / kết luận đạt / văn bản đạt. Hard rules: claim không evidence → hạ ⚠ hoặc quay lại STAGE 2; root cause là "what" → quay lại STAGE 3; TL;DR > 5 dòng hoặc core > 1 trang → cắt.
+Chạy đủ 3 checklist trong `references/checklists.md`: điều tra đủ / kết luận đạt / văn bản đạt (mục đánh dấu *full* chỉ áp cho `format=full`; mục *SPECS* chỉ áp cho type SPECS). Hard rules: claim không evidence → hạ ⚠ hoặc quay lại STAGE 2; root cause là "what" → quay lại STAGE 3; TL;DR > 5 dòng hoặc core > 1 trang → cắt.
 
 ### STAGE 5 — Render & giao
-1. Template theo type + locale (`references/templates.md`); cấu trúc bất biến: `TL;DR` → tầng non-tech → `---` → `Chi tiết kỹ thuật` → `Refs`. Trình bày theo Quy tắc trong `references/templates.md`: icon tối thiểu (không emoji heading, không icon từng dòng), gạch đầu dòng thay đoạn văn, không ví von phi kỹ thuật, chỉ đánh dấu `[Giả định]` cho claim chưa verify.
+1. Template theo `format` + type + locale. **`lite` (mặc định)**: `references/templates-lite.md` — một tầng, mục đánh số theo mẫu TechTus, chi tiết kỹ thuật nằm trong ô Evidence/Căn cứ, mục rỗng thì bỏ. **`full`**: `references/templates.md` — cấu trúc bất biến `TL;DR` → tầng non-tech → `---` → `Chi tiết kỹ thuật` → `Refs`. Trình bày theo Quy tắc trong `references/templates.md`: icon tối thiểu (không emoji heading, không icon từng dòng), gạch đầu dòng thay đoạn văn, không ví von phi kỹ thuật, chỉ đánh dấu `[Giả định]` cho claim chưa verify.
 2. `audience=customer` → (a) chạy **pass thẩm định độc lập** theo `../../agents/report-reviewer.md` (4 trục: chống anchoring, soát evidence, soát non-tech readability, đúng thể thức) — môi trường có agent system thì chạy agent `report-reviewer` trong context riêng, không có thì tự chạy như một pass tách biệt; pass chỉ góp ý, bạn/user quyết; (b) rà **redact**: tên cá nhân, credential, URL nội bộ → vai trò/`***`.
 3. Lưu: có workspace → `tasks/{ID}/05-delivery/report-<type>-<yyyymmdd>.md` + in chat; không → in chat + đề nghị chỗ lưu. Ảnh chụp/log đính kèm → `05-delivery/evidence/`.
 4. Giao 1 message: report + 1 dòng mời chỉnh (tone/độ dài/ngôn ngữ). Kèm khối bàn giao ngắn: stage nào đã chạy, artifact nằm đâu, còn ⚠ nào mở.
@@ -181,6 +194,7 @@ Analysis đã sinh `current-state.md`/`impact.md` (+ `debug-<date>.md` nếu có
 | **BUG**, fix nhiều việc / nhiều file / cần migrate | `planning` (kế hoạch fix) → rồi `backlog-ticket` | Root cause vừa chốt xong mới lên được kế hoạch sửa đúng gốc; WBS ra nhiều item thì mỗi item 1 ticket |
 | **BUG**, fix khu trú (option 🟢/🟡 trong bảng của `debug`) | thẳng `backlog-ticket` | WBS cho 1 dòng sửa là thừa |
 | **INVESTIGATION / TASK** | thẳng `backlog-ticket` | Không có "kế hoạch fix" để lập |
+| **SPECS** (khách đã confirm) | `planning` (WBS) → `backlog-ticket` — mỗi ticket task trích mã `AC-xx` của SPECS | Specs chốt *làm gì*; ticket task là *làm thế nào*, nghiệm thu bằng chính AC đã chốt |
 
 Skill được gọi **đọc thẳng artifact vừa có, KHÔNG khảo sát lại**; `backlog-ticket` tái dùng luôn estimate 🟢→⚫ mà `debug` đã ước, không ước lại từ đầu. Đây là đường rẻ nhất từ điều tra → ticket có estimation.
 
@@ -206,4 +220,4 @@ Sau convert: báo đường dẫn file + nhắc bản `.md` vẫn là bản gố
 - Pipeline **chẩn đoán, không sửa**: `debug` dừng ở option fix; report không chứa code fix. Việc sửa là task riêng sau khi user chốt option.
 - Không kể chuyện điều tra theo thời gian; không trộn fix vào phần root cause; không dịch chuỗi UI sản phẩm.
 - Phỏng vấn RCA (khi cần hỏi user) không tự chạy ngầm — báo user trước khi bắt đầu.
-- Report ≠ ticket ≠ PR description — không tự viết ticket/PR *bên trong* report. Riêng backlog: sau khi analysis xong ĐƯỢC **đề nghị handoff** sang skill `backlog-ticket` (STAGE 6) — nó là skill riêng, tái dùng artifact; report không tự lồng nội dung ticket vào.
+- Report ≠ ticket triển khai ≠ PR description — không tự viết ticket task/PR *bên trong* report. Type SPECS là nội dung ticket **clear specs** (làm gì / vì sao), không chứa bước triển khai hay Definition of Ready — phần đó thuộc `backlog-ticket`. Riêng backlog: sau khi analysis xong ĐƯỢC **đề nghị handoff** sang skill `backlog-ticket` (STAGE 6) — nó là skill riêng, tái dùng artifact; report không tự lồng nội dung ticket vào.

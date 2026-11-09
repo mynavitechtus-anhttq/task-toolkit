@@ -170,7 +170,7 @@ install_cursor() {
 
   cat > "$f" <<RULE
 ---
-description: Khi user yêu cầu viết report / báo cáo bug / điều tra issue ("viết report", "báo cáo bug", "root cause", "/task-toolkit:report"), đọc và làm theo $SKILLS/report/SKILL.md (kèm references/templates.md, references/checklists.md, references/rca-method.md, references/discovery-method.md; discovery-method trỏ tiếp tới ../../_shared/code-evidence-method.md cho kỹ thuật đào code).
+description: Khi user yêu cầu viết report / báo cáo bug / điều tra issue ("viết report", "báo cáo bug", "root cause", "/task-toolkit:report"), đọc và làm theo $SKILLS/report/SKILL.md (kèm references/templates-lite.md, references/templates.md, references/checklists.md, references/rca-method.md, references/discovery-method.md; discovery-method trỏ tiếp tới ../../_shared/code-evidence-method.md cho kỹ thuật đào code).
 alwaysApply: false
 ---
 RULE

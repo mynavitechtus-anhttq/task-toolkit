@@ -1,4 +1,6 @@
-# Report Templates — BUG / INVESTIGATION / TASK
+# Report Templates — FULL (BUG / INVESTIGATION / TASK)
+
+> Bản đầy đủ hai tầng, dùng khi `format=full`. Mặc định là bản rút gọn [`templates-lite.md`](templates-lite.md) (một tầng, theo mẫu TechTus, có thêm type SPECS). Nhãn section, tone và quy tắc trình bày dưới đây áp cho **cả hai** bản.
 
 ## Nhãn section theo locale
 

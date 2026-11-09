@@ -4,8 +4,11 @@ description: >-
   Generate standardized Backlog/Jira ticket content (title + markdown body) plus an evidence-based
   effort estimation for ANY project, writing one file per ticket into tasks/{ID}/backlog/ with a
   WBS-grouped README index, consuming task-survey output (current-state.md / impact.md) so the
-  ticket carries real file paths, dependency-walk scope, and testable outcomes. Company-standard template:
-  Description / Implementation content / Completion condition, plus Scope, Risk/Impact and Estimation.
+  ticket carries real file paths, dependency-walk scope, and testable outcomes. LITE by default — the
+  TechTus task-ticket template (Description / Impact-Scope-Device / Implementation content / Acceptance
+  criteria quoting the AC-xx codes of the clear-specs ticket / Estimate / DoR / DoD); format=full gives the
+  extended template (Description / Implementation content / Completion condition, plus Scope, Risk/Impact
+  and an Estimation table).
   Project specifics (title tag, ticket-number format, layers, PR targets, path conventions, examples)
   come from a runtime adapter (repo backlog config → project-context/CLAUDE.md → framework autodetect),
   never hardcoded. Trigger on "tạo backlog", "viết ticket", "backlog content", "task description",
@@ -24,6 +27,8 @@ description: >-
 > *"Ticket viết bằng ngôn ngữ nào? `vn` (mặc định) · `en` · `ja`"*
 > User trả lời rỗng → `vn`. Đã nêu `locale=` trong lệnh → **không hỏi lại**.
 > Gộp câu này với mọi thứ còn thiếu khác (ticket number, layer…) thành **một lượt hỏi duy nhất**, đừng hỏi rải rác.
+
+> **Độ dài theo `format`** — `lite` (**mặc định**, không hỏi): body theo mẫu ticket task của TechTus (`techtus/templates/ticket-task`), xem **Bước 4L**. `full`: body mở rộng ở **Bước 4** + bảng Estimation ở Bước 5. Adapter, evidence, title, quy tắc nội dung và cách ghi file giống nhau cho cả hai.
 
 > **Ai nghĩ, ai gõ** — bước *phán đoán* (nêu giả thuyết, chọn hướng, chốt kết luận, quyết định đánh đổi) là của **người phụ trách**; AI chỉ đưa *câu hỏi* hoặc *lựa chọn kèm đánh đổi* khi họ bí, không kết luận thay. Bước *thao tác* (grep, chạy lệnh verify, dựng bảng, soạn nháp theo template) AI làm, người soát từng dòng. Xem README §Nguyên tắc gốc.
 
@@ -113,7 +118,97 @@ Nếu survey cho thấy hành vi khách mô tả **không tồn tại** (route/c
 - `TICKET-NUM` nguyên văn.
 - Tên: English, verb-first khi tự nhiên, không dấu chấm cuối, ≤ 60 ký tự phần tên.
 
-## Bước 4 — Body (thứ tự section)
+## Bước 4L — Body bản lite (mặc định)
+
+Theo mẫu ticket task của TechTus. Ticket task là **làm thế nào**; **làm gì / vì sao** đã chốt ở ticket clear specs (type SPECS của skill `report`). **Không chèn heading `# title` trong body.**
+
+Nhãn mục theo locale (giữ đúng số thứ tự):
+
+| # | vn | en | ja |
+|---|---|---|---|
+| 1 | Description | Description | Description |
+| 2 | Impact / Scope / Device | Impact / Scope / Device | Impact / Scope / Device |
+| 3 | Implementation content | Implementation content | 実装内容 |
+| 4 | Acceptance criteria | Acceptance criteria | 受入基準 |
+| 5 | Estimate | Estimate | 見積もり |
+| 6 | Definition of Ready | Definition of Ready | Definition of Ready |
+| 7 | Definition of Done | Definition of Done | Definition of Done |
+
+````markdown
+## 1. Description
+
+- Ticket specs gốc: {link / mã ticket specs}
+- Hạng mục trong plan: {tên hạng mục WBS trong plan.md}
+- Task này làm những gì: {1–2 câu}
+
+## 2. Impact / Scope / Device
+
+- Impact — phạm vi bị ảnh hưởng: {từ impact.md — màn hình/chức năng; ghi cả "không ảnh hưởng vì…"}
+- Scope — nằm trong phạm vi task này: {…}
+- Ngoài phạm vi: {thứ giống-giống nhưng CỐ Ý không đụng}
+- Device — test trên thiết bị và kích thước nào: {PC / SP, trình duyệt, kích thước}
+
+## 3. Implementation content
+
+**File tạo mới / update:**
+
+- Tạo mới: `{path/to/new}`
+- Update: `{path/to/existing}:{dòng}`
+- Test: `{tests/path}`
+
+**Các bước:**
+
+- [ ] {Việc 1 — tên file hoặc function thật}
+- [ ] {Việc 2}
+- [ ] {Test của chính việc này}
+
+## 4. Acceptance criteria
+
+- [ ] AC-02: {bối cảnh}
+  - {data / nhánh} → {kết quả quan sát được}
+  - {data / nhánh} → {kết quả quan sát được}
+
+AC-05: {tên quy tắc}
+
+| {điều kiện 1} | {điều kiện 2} | Data | Kết quả |
+|---|---|---|---|
+|  |  |  |  |
+
+## 5. Estimate
+
+{x} md — lấy từ plan, không est lại
+
+## 6. Definition of Ready
+
+- [ ] Clear specs đã được khách confirm
+- [ ] Estimate xong, gồm cả self test
+- [ ] Không còn open question chặn
+- [ ] Design và tài liệu đủ để bắt đầu
+
+## 7. Definition of Done
+
+- [ ] Code đã merged
+- [ ] Unit test pass
+- [ ] QA pass, hoặc self test đạt nếu task không có tester
+- [ ] Tài liệu đã cập nhật
+- [ ] Demo được
+````
+
+Quy tắc bản lite:
+
+- **Mục 3** dùng chung quy tắc của bản full: liệt kê file trước rồi mới đến bước; mỗi bước một hành động tick được; không chữ rỗng (`xử lý`, `optimize`, `handle edge case`, `TBD`).
+- **Mục 4 — AC là bản chi tiết của AC trong ticket specs, không phải AC mới.** Nguồn: `05-delivery/report-specs-*.md` (type SPECS của `report`) hoặc ticket specs khách đã confirm.
+  - Giữ đúng mã `AC-xx` gốc; cần tách nhỏ thì dùng mã con `AC-02.1`, `AC-02.2`, không đánh số lại.
+  - Chỉ ghi các AC task này gánh; task implement và task self test có thể cùng trỏ một AC.
+  - Giữ dạng của AC gốc: checklist → dòng con có data cụ thể; Given–When–Then → đủ các nhánh (mỗi nhánh một `Scenario`); bảng quyết định → đủ tổ hợp, thêm cột Data.
+  - Data cụ thể: giá trị nhập, mã bản ghi, trạng thái dữ liệu, giá trị biên — đủ để người test làm lại.
+  - Lộ ra yêu cầu mới → **không thêm vào task**; báo user sửa ticket specs và hỏi khách trước.
+  - Chưa có ticket specs (bug fix nhỏ, việc nội bộ) → viết AC theo bảng chọn dạng trong `../report/references/templates-lite.md` §SPECS, đánh dấu `[Giả định — chưa có specs confirm]`.
+- **Mục 5** lấy đúng con số của hạng mục trong `plan.md`. Không có plan → chạy Bước 5 nhưng chỉ ghi **một dòng**: `{tổng} md (Dev {a} / Test {b} / Buffer {c}, confidence {…})`; lệch với plan thì sửa plan trước.
+- **Mục 6, 7** giữ nguyên checklist cố định; chỉ thêm dòng khi task có điều kiện riêng (vd cần quyền deploy, cần data test).
+- Risk riêng của task (deploy, migration, shared component) → thêm vào mục 2 dạng `Risk: {failure mode} — rollback: {hành động có thật}`, không mở bảng riêng.
+
+## Bước 4 — Body bản full (`format=full`, thứ tự section)
 
 3 mục đầu là template công ty, **luôn có**; `Scope` bắt buộc khi đụng code có sẵn; `Risk/Impact` bắt buộc khi đổi hành vi chạy thật (infra/runtime/migration/shared component/data job); `Estimation` mặc định có (xem Bước 5). **Không chèn heading `# title` trong body** — title giao riêng.
 
@@ -259,8 +354,8 @@ tasks/{TICKET-ID}/03-backlog/
 
 Sinh xong ticket thì **rollup luôn** sang checklist kiểm tay — nó là của người làm, khác `testcases/` (bộ chính thức cho tester/automation):
 
-- Mỗi ticket đóng góp các dòng `Completion condition` **kiểm được bằng tay**.
-- Mỗi màn hình/chức năng trong `Risk/Impact` (lấy từ `impact.md`) → **1 checkbox regression**.
+- Mỗi ticket đóng góp các dòng `Completion condition` (bản lite: các dòng con của mục `Acceptance criteria`) **kiểm được bằng tay**, ghi kèm mã `AC-xx`.
+- Mỗi màn hình/chức năng trong `Risk/Impact` (bản lite: dòng Impact ở mục 2; lấy từ `impact.md`) → **1 checkbox regression**.
 - Nhóm theo: Unit · Feature · Manual · Regression. Mỗi dòng ghi rõ **thuộc ticket nào**.
 
 Không rollup thì `Risk/Impact` chỉ là văn bản đọc cho vui — không ai tick, không ai biết đã kiểm hay chưa.
@@ -301,8 +396,10 @@ Plan bị cắt ngân sách → vài item gộp vào item khác. Ticket nhận p
 ## Help
 
 ```
-backlog-ticket <TICKET-NUM|mô tả> [locale=vn|en|ja]
-  Sinh title + body ticket chuẩn công ty + estimation, ăn từ task-survey (current-state.md/impact.md).
+backlog-ticket <TICKET-NUM|mô tả> [locale=vn|en|ja] [format=lite|full]
+  Sinh title + body ticket + estimation, ăn từ task-survey (current-state.md/impact.md).
+  - format=lite (mặc định): mẫu ticket task TechTus — 7 mục, AC trích mã AC-xx của ticket specs, Estimate lấy từ plan.
+  - format=full: Description / Implementation / Completion condition + Scope / Risk-Impact / bảng Estimation.
   - Repo có config .claude/backlog-ticket.config.md → repo tự thắng (project tag, PR targets, ví dụ).
   - Chưa có survey → chạy task-survey trước (hoặc grep nhanh + [verify in code]).
   - Gọi qua /task-toolkit:report sau analysis: "generate backlog + estimation" (không survey lại).

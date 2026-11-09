@@ -42,7 +42,7 @@ flowchart TD
     D1 -->|"chưa"| DBG["debug<br/>chẩn đoán kỹ thuật<br/>→ cause + option fix"]
     D1 -->|"rồi"| R
     DBG -->|"Immediate Cause<br/>+ evidence"| R["RCA 5-Whys<br/>→ root cause hệ thống"]
-    R --> REP["report<br/>BLUF 2 tầng độc giả"]
+    R --> REP["report<br/>BLUF · lite mặc định / full 2 tầng"]
     REP --> PF["planning<br/>kế hoạch fix"]
     PF -->|"mỗi WBS item"| BT["backlog-ticket<br/>ticket chuẩn + estimation"]
     P -->|"mỗi WBS item"| BT
@@ -72,9 +72,9 @@ RCA 5-Whys      (nhánh BUG) 3 tầng root cause — Layer 1 = Immediate Cause t
 planning        WBS overview (No|Title|Detail|Est sơ bộ|Scope&Impact|Outcome) + checklist tiến độ/item
                 BUG → chạy SAU report (kế hoạch fix) · FEATURE → chạy ngay sau analyze-spec
 gate            3 checklist: điều tra đủ / kết luận đạt / văn bản đạt
-report          BLUF + 2 tầng độc giả; gửi khách → pass thẩm định report-reviewer + redact PII
+report          BLUF; format=lite (mặc định, 1 tầng, mẫu TechTus) | full (2 tầng); type BUG/INVESTIGATION/SPECS/TASK; gửi khách → pass thẩm định report-reviewer + redact PII
                 locale vn (mặc định) | en | ja
-backlog-ticket  mỗi WBS item → ticket chuẩn công ty + estimation (TÁI DÙNG current-state/impact/plan
+backlog-ticket  mỗi WBS item → ticket (lite mặc định: mẫu ticket task TechTus, AC trích AC-xx của specs | full) + estimation (TÁI DÙNG current-state/impact/plan
                 + estimate 🟢→⚫ của debug, không ước lại)
 ```
 
@@ -118,7 +118,8 @@ Nó đọc chung kho artifact đó, nhưng neo vào **release diff** (`staging..
 | Diagnostic commands | `skills/debug/references/diagnostic-commands.md` | Thư viện lệnh chẩn đoán theo loại hệ thống (DB, service, runtime, network, dependency, container/CI) + luật an toàn read-only + snapshot "máy tôi chạy được" | — (dùng trong `debug`) |
 | RCA method | `skills/report/references/rca-method.md` | Phương pháp 5 Whys 3 tầng (STAGE 3 cho BUG, chạy SAU `debug`) — Layer 1 là input, không dựng lại | "chỉ chạy 5 whys cho sự cố X" |
 | Discovery method | `skills/report/references/discovery-method.md` | Reverse-engineer hệ thống **mình chưa nắm kiến trúc** (lạ/legacy/multi-repo) — dựng project context + kiến trúc trước, kết luận sau (khác task-survey: khảo hẹp quanh 1 task) | Điều tra kiến trúc trước khi kết luận |
-| Templates | `skills/report/references/templates.md` | 3 template BUG/INVESTIGATION/TASK + nhãn section & tone VN/EN/JA | — |
+| Templates (lite, mặc định) | `skills/report/references/templates-lite.md` | 4 template rút gọn BUG/INVESTIGATION/SPECS/TASK theo mẫu TechTus; AC 3 dạng (checklist / Given–When–Then / bảng quyết định) | — |
+| Templates (full) | `skills/report/references/templates.md` | 3 template 2 tầng BUG/INVESTIGATION/TASK + nhãn section & tone VN/EN/JA (dùng chung cho cả lite) | — |
 | Checklists | `skills/report/references/checklists.md` | 3 gate chất lượng | — |
 | Reviewer | `agents/report-reviewer.md` | Thẩm định độc lập trước khi gửi khách (4 trục, chỉ góp ý) | "soát report này trước khi mình gửi" |
 | Help | `commands/help.md` | Bản đồ dùng package — gõ gì cho tình huống nào, pipeline chạy thứ tự nào, mỗi skill làm gì | `/task-toolkit:help` khi chưa biết bắt đầu |
