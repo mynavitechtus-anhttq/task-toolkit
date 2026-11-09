@@ -164,9 +164,12 @@ Nhãn mục theo locale (giữ đúng số thứ tự):
 
 ## 4. Acceptance criteria
 
-- [ ] AC-02: {bối cảnh}
-  - {data / nhánh} → {kết quả quan sát được}
-  - {data / nhánh} → {kết quả quan sát được}
+- [ ] **AC-02 — {tên hành vi, giữ như specs}**
+  - Ở đâu: {màn hình, môi trường, điều kiện ban đầu}
+  - Làm gì: {thao tác}
+  - Kết quả:
+    - {data / nhánh} → {kết quả quan sát được}
+    - {data / nhánh} → {kết quả quan sát được}
 
 AC-05: {tên quy tắc}
 
@@ -200,7 +203,7 @@ Quy tắc bản lite:
 - **Mục 4 — AC là bản chi tiết của AC trong ticket specs, không phải AC mới.** Nguồn: `05-delivery/report-specs-*.md` (type SPECS của `report`) hoặc ticket specs khách đã confirm.
   - Giữ đúng mã `AC-xx` gốc; cần tách nhỏ thì dùng mã con `AC-02.1`, `AC-02.2`, không đánh số lại.
   - Chỉ ghi các AC task này gánh; task implement và task self test có thể cùng trỏ một AC.
-  - Giữ dạng của AC gốc: checklist → dòng con có data cụ thể; Given–When–Then → đủ các nhánh (mỗi nhánh một `Scenario`); bảng quyết định → đủ tổ hợp, thêm cột Data.
+  - Giữ dạng của AC gốc: checklist → giữ tiêu đề và dòng `Ở đâu` / `Làm gì`, dòng `Kết quả` tách theo từng data / nhánh; Given–When–Then → đủ các nhánh (mỗi nhánh một `Scenario`); bảng quyết định → đủ tổ hợp, thêm cột Data.
   - Data cụ thể: giá trị nhập, mã bản ghi, trạng thái dữ liệu, giá trị biên — đủ để người test làm lại.
   - Lộ ra yêu cầu mới → **không thêm vào task**; báo user sửa ticket specs và hỏi khách trước.
   - Chưa có ticket specs (bug fix nhỏ, việc nội bộ) → viết AC theo bảng chọn dạng trong `../report/references/templates-lite.md` §SPECS, đánh dấu `[Giả định — chưa có specs confirm]`.

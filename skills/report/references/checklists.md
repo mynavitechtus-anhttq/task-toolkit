@@ -52,5 +52,6 @@
 - [ ] Từ 2 phương án trở lên: có bảng so sánh và lý do chọn; phương án do người phụ trách chốt, không phải AI
 - [ ] Bảng Phạm vi có cả dòng ❌ (đã kiểm, không ảnh hưởng) kèm lý do
 - [ ] Mỗi AC có mã `AC-xx`, pass / fail được, kết quả quan sát được; dạng chọn đúng bảng (checklist / Given–When–Then / bảng quyết định); 3–7 AC
-- [ ] Điều chưa chốt nằm ở Open question (có người hỏi + hạn), không viết thành AC
+- [ ] AC checklist theo mẫu: tiêu đề `AC-xx — <tên hành vi>` + dòng con `Ở đâu` / `Làm gì` / `Kết quả` / `Ví dụ kiểm`; quy tắc lặp đưa lên `Quy tắc chung`; dịch ở `Thuật ngữ`, nguồn/OQ ở `Ghi chú`
+- [ ] Điều chưa chốt nằm ở Open question, có `Mức độ` (Blocked / Không block), `Câu trả lời` = `—` khi chưa có; câu hỏi kèm bối cảnh, ví dụ, các cách hiểu và hệ quả — không viết thành AC
 - [ ] Không có bước triển khai, Definition of Ready, yêu cầu chung của DoD trong specs

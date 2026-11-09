@@ -157,13 +157,22 @@ Từ 2 phương án trở lên thì so sánh và nêu lý do chọn:
 
 <Mỗi AC có mã `AC-xx`, pass / fail được. Chọn dạng theo bảng dưới; một ticket có thể trộn dạng.>
 
-- [ ] AC-01: <bối cảnh> + <thao tác> → <kết quả quan sát được>
+**Quy tắc chung:** <quy tắc dùng chung cho nhiều AC — bỏ nếu không có>
+
+- [ ] **AC-01 — <tên hành vi, ≤ 10 từ>**
+  - Ở đâu: <màn hình / trang, môi trường, điều kiện ban đầu>
+  - Làm gì: <thao tác — bỏ dòng nếu chỉ mở trang xem>
+  - Kết quả: <kết quả quan sát được của hành vi này>
+  - Ví dụ kiểm: <URL hoặc data cụ thể> → <điều thấy được>   (tuỳ chọn)
+
+**Thuật ngữ:** <chuỗi tiếng Nhật> <nghĩa> · …
+**Ghi chú:** <nguồn dữ liệu, môi trường đã kiểm, OQ liên quan>
 
 ## 5. Open question
 
-| # | Câu hỏi | Hỏi ai | Hạn | Trạng thái |
-|---|---|---|---|---|
-| 1 |  |  |  | Đang chờ |
+| # | Câu hỏi | Mức độ | Câu trả lời |
+|---|---|---|---|
+| 1 | <câu hỏi><br/>- Bối cảnh: <…><br/>- Ví dụ: <…><br/>- Cách A: <…> → <hệ quả><br/>- Cách B: <…> → <hệ quả> | Blocked | — |
 
 ## 6. Phát hiện ngoài phạm vi
 - <…>
@@ -178,7 +187,7 @@ Từ 2 phương án trở lên thì so sánh và nêu lý do chọn:
 
 | Dạng | Dùng khi | Cách viết |
 |---|---|---|
-| **Checklist** (mặc định) | Quy tắc đơn giản: validation, hiển thị, giới hạn giá trị, luồng cũ không đổi | `AC-xx: [bối cảnh] + [thao tác] → [kết quả quan sát được]` |
+| **Checklist** (mặc định) | Quy tắc đơn giản: validation, hiển thị, giới hạn giá trị, luồng cũ không đổi | Tiêu đề in đậm `AC-xx — <tên hành vi>`, rồi dòng con có nhãn `Ở đâu` · `Làm gì` (bỏ nếu chỉ xem) · `Kết quả` · `Ví dụ kiểm` (tuỳ chọn) |
 | **Given–When–Then** | Kết quả phụ thuộc trạng thái trước khi thao tác (tin hết hạn, user đã login…) | Code block `gherkin`, một kịch bản một hành vi, 3–5 bước, dòng đầu là `AC-xx: <tên hành vi>` |
 | **Bảng quyết định** | Từ 2 điều kiện trở lên kết hợp, mỗi tổ hợp một kết quả | Dòng `AC-xx: <tên quy tắc>` rồi bảng: mỗi điều kiện một cột, cột cuối là kết quả, `Bất kỳ` khi không ảnh hưởng. Quá ~10 dòng → cân nhắc tách ticket |
 
@@ -187,8 +196,13 @@ Quy tắc AC ở SPECS:
 - 3–7 AC — **phạm vi nghiệm thu**, không phải test case; không liệt kê đủ nhánh và data (để ở ticket task / test case).
 - Rà các nhóm, chỉ ghi nhóm liên quan: luồng thành công · dữ liệu sai · giá trị biên · quyền · lỗi hệ thống · luồng cũ không đổi.
 - Kết quả **quan sát được** (người dùng thấy / dữ liệu nhận được), không mô tả code bên trong ("không gọi API" → "form không được gửi").
+- **Một AC một hành vi**: nhiều điều quan sát được của cùng hành vi ghi chung dòng `Kết quả`; hành vi khác thì tách AC.
+- Quy tắc lặp ở từ 2 AC trở lên → đưa lên dòng `Quy tắc chung` đầu mục; mỗi AC chỉ còn phần khác nhau.
+- `Ví dụ kiểm` tách khỏi `Kết quả` (kết quả là quy tắc, ví dụ là cách kiểm). Dịch chuỗi tiếng Nhật một lần ở dòng `Thuật ngữ`; nguồn dữ liệu, môi trường, OQ liên quan → dòng `Ghi chú`. Hai dòng này áp cho cả ba dạng.
 - Điều chưa chốt → mục 5 Open question, **không** viết thành AC. Lấy từ open questions của `analyze-spec`.
 - Yêu cầu chung mọi ticket (review, test hồi quy, deploy) thuộc DoD — không chép vào AC.
+
+**Open question:** cột `Mức độ` = `Blocked` (chưa trả lời thì chưa làm được) / `Không block`; cột `Câu trả lời` = `—` khi chưa có. Câu hỏi kèm bối cảnh, ví dụ, các cách hiểu và hệ quả của từng cách — đủ để khách trả lời mà không phải hỏi lại. Nhãn: en `Question | Severity | Answer`, `Blocked` / `Not blocking`; ja `質問 | 影響度 | 回答`, `ブロック` / `ブロックしない`.
 
 ## Template TASK (lite)
 
